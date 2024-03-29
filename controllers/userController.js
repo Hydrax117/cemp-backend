@@ -21,7 +21,7 @@ const signUp = catchAsync(async (req, res, next) => {
     const existingUser = await User.findOne({email});
 
     if (existingUser){
-        return next(new HttpError("User already exists!", 400);
+        return next(new HttpError("User already exists!", 400));
     }
 
     const passwordHash = await createHashedPassword(password);
@@ -80,12 +80,17 @@ const login = catchAsync(async (req, res, next) => {
             success: true,
             mesaage: "User Login Successful",
             user: {
-                
-            }
-            token,
+                userId: existingUser._id,
+                fullname: existingUser.fullname,
+                email: existingUser.email,
+                token,
+            },
         });
         } catch (error) {
-            
+            return next(new HttpError("Unable to login, try again", 500));
         }
 
 });
+
+
+export {signUp, login};
