@@ -1,9 +1,10 @@
 import User from "../models/userModel.js";
-import catchAsync from "../utils/catchAsync.js";
+import { catchAsync } from "../utils/catchAsync.js";
 import HttpError from "../utils/http-error.js";
-import {generateToken, createHashedPassword, comparePassword} from "../utils/authHelper.js";
+import {generateToken, createHashedPassword, comparePassword} from "../utils/authHelpers.js";
 
 const signUp = catchAsync(async (req, res, next) => {
+    try {
     const {fullname, email, password }  = req.body;
     
     if (!fullname || fullname.trim().length === 0){
@@ -34,7 +35,7 @@ const signUp = catchAsync(async (req, res, next) => {
 
     await newUser.save();
 
-    const token = await generateToken({newUser._id, newUser.email});
+    const token = await generateToken(newUser._id, newUser.email);
 
     res.status(200).json({
         success: true,
@@ -44,8 +45,9 @@ const signUp = catchAsync(async (req, res, next) => {
             fullname: newUser.fullname,
             email: newUser.email,
             token
-        }
-    }).catch(error){
+            }
+        })
+    }catch(error){
         return next(new HttpError("Unable to create user, try again.", 500));
     }
 });
@@ -74,7 +76,7 @@ const login = catchAsync(async (req, res, next) => {
             return next(new HttpError("Passwords do not match", 400));
         }
 
-        const token = await generateToken({existingUser._id, existingUser.email});
+        const token = await generateToken(existingUser._id, existingUser.email);
 
         res.status(201).json({
             success: true,

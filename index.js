@@ -1,14 +1,15 @@
 // Importing required modules
 import express from "express";
-import connectToDB from "./config/database.js";
+import { connectToDB } from "./config/database.js";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
+import dotenv from "dotenv";
 //const express = require("express");
 //const connectToDB = require("./config/database.js");
 //const cors = require("cors");
 //const userRoutes = require("./routes/userRoutes.js");
 
-require("dotenv").config();
+dotenv.config();
 connectToDB();
 // Create an Express application
 const app = express();
