@@ -200,6 +200,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
     if (!token || typeof token !== 'string') {
       return next(new HttpError('Invalid reset token', 400));
     }
+    console.log(token);
 
     // 2. Hash the token securely using a more robust algorithm:
     let hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -209,6 +210,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
     });
+    console.log(user);
 
     if (!user) {
       return next(new HttpError('Invalid or expired reset token', 400));
