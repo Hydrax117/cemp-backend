@@ -8,7 +8,8 @@ const signUp = catchAsync(async (req, res, next) => {
     try {
 
         const {fullname, email, password }  = req.body;
-    
+        console.log(fullname, email, password);
+        
         if (!fullname || fullname.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
         }
