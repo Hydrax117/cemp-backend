@@ -169,7 +169,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
     let resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-    let resetURL = `${clientUrl}reset-password/${resetToken}`;
+    let resetURL = `/${clientUrl}reset-password/${resetToken}`;
 
     const message = `Your password reset token is :- \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
 
@@ -201,26 +201,24 @@ const resetPassword = catchAsync(async (req, res, next) => {
     }
 
     // 2. Hash the token securely using a more robust algorithm:
-    let resetToken = user.createPasswordResetToken();
+    let hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
-      passwordResetToken: resetToken,
+      passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
     });
 
     if (!user) {
       return next(new HttpError('Invalid or expired reset token', 400));
     }
-
+    
+    user.password = req.body.password;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
     await user.save({ validateBeforeSave: false });
-
-    //let resetURL = `${clientUrl}reset-password/${resetToken}`;
-    //let message = `Forget your password ? click the link below to reset it. \n${resetURL}.\nIf you didn't forget your password, please ignore this email !!!`;
-    //await resetPasswordEmail(user.email, token, process.env.BASE_URL);
+    generateToken(user._id, user.email);
 
     res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {

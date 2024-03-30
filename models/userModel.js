@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema(
 
 //Generating password reset token with crypto
 userSchema.methods.createPasswordResetToken = function(){
-    let resetToken = crypto.randomBytes(32).toString("hex");
+    let resetToken = crypto.randomBytes(24).toString("hex");
     this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
     return resetToken;
