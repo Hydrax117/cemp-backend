@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const userSchema = mongoose.Schema(
   {
@@ -14,14 +15,35 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
+    avatar: {
+      public_id: { 
+      type: String,
+      required: true,
+      },
+      url: {
+          type: String,
+          required: true,
+      },
+    },
+   role: {
       type: Boolean,
       required: true,
-      default: false,
+      enum: ["member", "community-admin"],
+      default: "member",
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   { timestamps: true }
 );
+
+//Generating password reset token with crypto
+userSchema.methods.createPasswordResetToken = function(){
+    let resetToken = crypto.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+    return resetToken;
+}
 
 const User = mongoose.model("User", userSchema);
 
