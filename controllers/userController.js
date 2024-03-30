@@ -3,6 +3,7 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { sendEmail } from "../utils/email.js";
 import HttpError from "../utils/http-error.js";
 import {generateToken, createHashedPassword, comparePassword} from "../utils/authHelpers.js";
+import crypto from "crypto";
 
 const signUp = catchAsync(async (req, res, next) => {
     try {
@@ -169,7 +170,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
     let resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-    let resetURL = `/${clientUrl}reset-password/${resetToken}`;
+    let resetURL = `${clientUrl}/reset-password/${resetToken}`;
 
     const message = `Your password reset token is :- \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
 
