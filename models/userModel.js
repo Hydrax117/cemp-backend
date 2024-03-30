@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema(
       },
     },*/
    role: {
-      type: Boolean,
+      type: String,
       required: true,
       enum: ["member", "community-admin"],
       default: "member",
