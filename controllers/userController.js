@@ -44,6 +44,7 @@ const signUp = catchAsync(async (req, res, next) => {
                 message: `Dear ${newUser.fullname}, Welcome to React community. Thank you for joining us`,
         })
         }catch (error){
+            console.error("Error sending email:", error);
             return next(new HttpError("Message not sent Successfully", 500));
        }
 
@@ -60,6 +61,7 @@ const signUp = catchAsync(async (req, res, next) => {
             }
         })
     }catch(error){
+        console.error("Error creating user:", error);
         return next(new HttpError("Unable to create user, try again.", 500));
     }
 });
