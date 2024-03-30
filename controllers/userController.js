@@ -10,15 +10,15 @@ const signUp = catchAsync(async (req, res, next) => {
         const {fullname, email, password }  = req.body;
     
         if (!fullname || fullname.trim().length === 0){
-            return next(HttpError("Fullname cannot be empty!", 400));
+            return next(new HttpError("Fullname cannot be empty!", 400));
         }
 
         if (!email || email.trim().length === 0){
-            return next(HttpError("Email cannot be empty!", 400));
+            return next(new HttpError("Email cannot be empty!", 400));
         }
 
         if (!password || password.trim().length === 0){
-            return next(HttpError("Password cannot be empty", 400));
+            return next(new HttpError("Password cannot be empty", 400));
         }
 
         const existingUser = await User.findOne({email});
