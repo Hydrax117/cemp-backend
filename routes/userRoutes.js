@@ -10,7 +10,7 @@ router.post("/login", login);
 router.get("/users", getAllUsers);
 router.get("/:id", getUser);
 router.post("/forgot-password", forgotPassword);
-router.patch("/reset-password/:token", resetPassword);
+router.put("/reset-password/:token", resetPassword);
 
 
 export default router;
