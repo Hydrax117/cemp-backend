@@ -223,5 +223,4 @@ const resetPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-
 export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword};
