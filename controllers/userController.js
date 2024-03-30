@@ -49,6 +49,7 @@ const signUp = catchAsync(async (req, res, next) => {
        }
 
         const token = await generateToken(newUser._id, newUser.email);
+        console.log(token);
 
         res.status(200).json({
             success: true,
