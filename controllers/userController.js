@@ -134,6 +134,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
             },
         });
     }catch (error){
+      console.log(error);
         return next(new HttpError("Could not retrieve users", 500));
     }
 
@@ -170,7 +171,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     let resetURL = `${clientUrl}reset-password/${resetToken}`;
 
-    const message = `Your password reset token is :- \n\n ${resetUrl} \n\nIf you have not requested this email then, please ignore it.`;
+    const message = `Your password reset token is :- \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
 
     try {
         await sendEmail({
