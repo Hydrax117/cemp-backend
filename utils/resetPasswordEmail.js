@@ -3,12 +3,12 @@ import nodemailer from "nodemailer";
 async function resetPasswordEmail(email, token, baseUrl) {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST, // your email provider's host
-      port: process.env.EMAIL_PORT, // your email provider's port
-      secure: false, // provider's requirements
+      host: process.env.EMAIL_HOST, 
+      port: process.env.EMAIL_PORT, 
+      secure: false, 
       auth: {8
-        user: process.env.EMAIL_USER, // your email address
-        pass: process.env.EMAIL_PASSWORD // your email password
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASSWORD,
       }
     });
 

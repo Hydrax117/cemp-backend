@@ -7,7 +7,7 @@ import {generateToken, createHashedPassword, comparePassword} from "../utils/aut
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const {fullName, email, password }  = req.body;
+        const { fullName, email, password }  = req.body;
         const role = req.body?.role;
         console.log(fullName, email, password, role);
         
@@ -31,13 +31,12 @@ const signUp = catchAsync(async (req, res, next) => {
 
         const passwordHash = await createHashedPassword(password);
 
-        const newUser = new User({
+        const newUser = await User.create({
             fullName,
             email,
             password: passwordHash,
+            role,
         });
-
-        await newUser.save();
 
         try {
             await sendEmail({
@@ -57,10 +56,11 @@ const signUp = catchAsync(async (req, res, next) => {
             success: true,
             message: "User Created Successfully",
             user: {
-            userId: newUser._id,
-            fullName: newUser.fullName,
-            email: newUser.email,
-            token
+                userId: newUser._id,
+                fullName: newUser.fullName,
+                email: newUser.email,
+                role: newUser.role,
+                token
             }
         })
     }catch(error){
@@ -78,7 +78,7 @@ const login = catchAsync(async (req, res, next) => {
             return next(new HttpError("Email cannot be empty", 400));
         }
 
-        if (!password || password.trim().length === 0){
+        if (!password || password.length === 0){
             return next(new HttpError("Password cannot be empty", 400));
         }
         

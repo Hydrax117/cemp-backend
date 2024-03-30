@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import HTML_TEMPLATE from "./mail-template.js";
 
 const sendEmail = async (options) => {
-    
     const transporter = nodemailer.createTransport({
         service: process.env.SERVICE,
         host: process.env.EMAIL_HOST,
@@ -14,7 +13,7 @@ const sendEmail = async (options) => {
 
     //Emails options
     let mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.EMAIL_USER,
         to: options.email,
         subject: options.subject,
         text: options.message,
