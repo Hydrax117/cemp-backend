@@ -160,7 +160,7 @@ const getUser = catchAsync(async (req, res, next) => {
 
 
 const forgotPassword = catchAsync(async (req, res, next) => {
-    const clientUrl = req.rawHeaders[req.rawHeaders.length - 5];
+    const clientUrl = process.env.BASE_URL;
 
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
