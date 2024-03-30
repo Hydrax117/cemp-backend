@@ -7,11 +7,11 @@ import {generateToken, createHashedPassword, comparePassword} from "../utils/aut
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const {fullname, email, password }  = req.body;
+        const {fullName, email, password }  = req.body;
         const role = req.body?.role;
-        console.log(fullname, email, password, role);
+        console.log(fullName, email, password, role);
         
-        if (!fullname || fullname.trim().length === 0){
+        if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
         }
 
@@ -32,7 +32,7 @@ const signUp = catchAsync(async (req, res, next) => {
         const passwordHash = await createHashedPassword(password);
 
         const newUser = new User({
-            fullname,
+            fullName,
             email,
             password: passwordHash,
         });
@@ -43,7 +43,7 @@ const signUp = catchAsync(async (req, res, next) => {
             await sendEmail({
                 email: newUser.email,
                 subject: "Sign-up Notification",
-                message: `Dear ${newUser.fullname}, Welcome to React community. Thank you for joining us`,
+                message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us`,
         })
         }catch (error){
             console.error("Error sending email:", error);
@@ -58,7 +58,7 @@ const signUp = catchAsync(async (req, res, next) => {
             message: "User Created Successfully",
             user: {
             userId: newUser._id,
-            fullname: newUser.fullname,
+            fullName: newUser.fullName,
             email: newUser.email,
             token
             }
@@ -97,7 +97,7 @@ const login = catchAsync(async (req, res, next) => {
             await sendEmail({
                 email: existingUser.email,
                 subject: "Login Notification",
-                message: `Dear ${existingUser.fullname}, Your Login was Successful`,
+                message: `Dear ${existingUser.fullName}, Your Login was Successful`,
         })
         }catch (error){
             return next(new HttpError("Message not sent Successfully", 500));
@@ -111,7 +111,7 @@ const login = catchAsync(async (req, res, next) => {
             message: "User Login Successful",
             user: {
                 userId: existingUser._id,
-                fullname: existingUser.fullname,
+                fullName: existingUser.fullName,
                 email: existingUser.email,
                 token,
             },
