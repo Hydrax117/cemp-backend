@@ -27,7 +27,7 @@ const HTML_TEMPLATE = (text) => {
             text-align: center;
           }
           .email-body {
-            padding: 20px;
+            padding: 10px;
           }
           .email-footer {
             background-color: #333;

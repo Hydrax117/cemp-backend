@@ -23,6 +23,7 @@ const userSchema = mongoose.Schema(
       url: {
           type: String,
           required: true,
+          default: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fillustration%2Fprofile-pic.html&psig=AOvVaw0bw6vX_WlxJpJsShwoTRBS&ust=1711920655968000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCND1p8j3nIUDFQAAAAAdAAAAABAJ",
       },
     },*/
    role: {

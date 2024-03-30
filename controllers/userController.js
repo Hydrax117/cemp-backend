@@ -42,7 +42,7 @@ const signUp = catchAsync(async (req, res, next) => {
             await sendEmail({
                 email: newUser.email,
                 subject: "Sign-up Notification",
-                message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us`,
+                message: `Dear ${newUser.fullName}, \nWelcome to React community. Thank you for joining us`,
         })
         }catch (error){
             console.error("Error sending email:", error);
@@ -175,11 +175,11 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     try {
         await sendEmail({
         email: user.email,
-        subject: "Your Password Reset Token (valid for 15 minutes)",
+        subject: "React community Password Reset Token (valid for 15 minutes)",
         message,
     });
     res.status(200).json({
-      status: "ok",
+      success: true,
       message: "Token sent to your email!",
     });
     } catch (error) {
