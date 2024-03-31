@@ -17,8 +17,8 @@ const userSchema = mongoose.Schema(
     },
     /*avatar: {
       public_id: { 
-      type: String,
-      required: true,
+          type: String,
+          required: true,
       },
       url: {
           type: String,
@@ -34,9 +34,11 @@ const userSchema = mongoose.Schema(
     github: {
       type: String,
       required: true,
+      default: "https://github.com",
     },
     portfolio: {
       type: String,
+      default: "https://github.com",
     },
     contact: {
       type: String,
