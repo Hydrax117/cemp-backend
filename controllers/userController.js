@@ -203,12 +203,12 @@ const resetPassword = catchAsync(async (req, res, next) => {
     console.log(token);
 
     // 2. Hash the token securely using a more robust algorithm:
-    let hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
     console.log(hashedToken);
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
-      passwordResetToken: hashedToken,
+      passwordResetToken,
       passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
     });
     console.log(user);
