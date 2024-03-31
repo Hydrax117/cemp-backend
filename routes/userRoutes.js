@@ -12,9 +12,8 @@ router.get("/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.put("/me/update", isAuthenticatedUser, updateUser);
-router.delete("/delete/:id", authorizeRoles("community-admin"), deleteUser);
+router.route("/delete/:id").delete(isAuthenticatedUser, authorizeRoles("community-admin"), deleteUser);
 router.get("/logout", logout);
-
 
 export default router;
 
