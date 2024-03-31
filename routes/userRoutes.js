@@ -1,6 +1,6 @@
 import { Router } from "express";
-import  { authorizeRoles } from "../middlewares/auth.js";
-import { signUp, login, getAllUsers, getUser, forgotPassword, resetPassword } from "../controllers/userController.js";
+import  { authorizeRoles, isAuthenticatedUser } from "../middlewares/auth.js";
+import { signUp, login, getAllUsers, getUser, forgotPassword, resetPassword, updateUser, deleteUser, logout } from "../controllers/userController.js";
 
 //TODO - import { requireSignIn } from "../helpers/authHelpers.js";
 const router = Router();
@@ -11,6 +11,9 @@ router.get("/users", getAllUsers);
 router.get("/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
+router.put("/me/update", isAuthenticatedUser, updateUser);
+router.delete("/delete/:id", authorizeRoles("community-admin"), deleteUser);
+router.get("/logout", logout);
 
 
 export default router;

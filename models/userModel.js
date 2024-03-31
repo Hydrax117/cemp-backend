@@ -26,7 +26,23 @@ const userSchema = mongoose.Schema(
           default: "https://drive.google.com/file/d/18R8cm3ASWfTwgg994-hkyxZClVX8h0TG/view?usp=drivesdk",
       },
     },*/
-   role: {
+    interests: {
+      type: String,
+      enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
+      default: "Novice",
+    },
+    github: {
+      type: String,
+      required: true,
+    },
+    portfolio: {
+      type: String,
+    },
+    contact: {
+      type: String,
+      required: true,
+    },
+    role: {
       type: String,
       required: true,
       enum: ["member", "community-admin"],

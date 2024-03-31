@@ -8,12 +8,20 @@ import crypto from "crypto";
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const { fullName, email, password }  = req.body;
+        const { fullName, email, password, interests, github, portfolio, contact }  = req.body;
         const role = req.body?.role;
         console.log(fullName, email, password, role);
         
         if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
+        }
+        
+        if (!github || github.trim().length === 0){
+            return next(new HttpError("Github url cannot be empty!", 400));
+        }
+
+        if (!contact || contact.trim().length === 0){
+            return next(new HttpError("Contact cannot be empty!", 400));
         }
 
         if (!email || email.trim().length === 0){
@@ -37,6 +45,10 @@ const signUp = catchAsync(async (req, res, next) => {
             email,
             password: passwordHash,
             role,
+            interests,
+            github,
+            portfolio,
+            contact
         });
 
         try {
@@ -61,6 +73,9 @@ const signUp = catchAsync(async (req, res, next) => {
                 fullName: newUser.fullName,
                 email: newUser.email,
                 role: newUser.role,
+                interests: newUser.interests,
+                github: newUser.github,
+                portfolio: newUser.portfolio,
                 token
             }
         })
@@ -172,7 +187,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     let resetURL = `${clientUrl}/api/users/reset-password/${resetToken}`;
 
-    const message = `Your password reset token is :- \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
+    const message = `Your password reset token is: \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
 
     try {
         await sendEmail({
@@ -193,7 +208,6 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 
-
 const resetPassword = catchAsync(async (req, res, next) => {
   try {
     const token = req.params.token;
@@ -206,7 +220,6 @@ const resetPassword = catchAsync(async (req, res, next) => {
     // 2. Hash the token securely using a more robust algorithm:
     let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
     console.log(passwordResetToken);
-    console.log(token)
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
@@ -223,7 +236,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
-    const message = `Your password reset was successfull. :- \n\nIf you have not initiated this activity, then please contact ${process.env.EMAIL_USER}.`;
+    const message = `Your password reset was successfull: \n\nIf you have not initiated this activity, please contact ${process.env.EMAIL_USER}.`;
 
     await user.save({ validateBeforeSave: false });
  
@@ -243,4 +256,62 @@ const resetPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword};
+const updateUser = catchAsync( async(req, res, next) => {
+  try {
+    const newUserData = {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      interests: req.body.interests,
+      github: req.body.github,
+      portfolio: req.body.portfolio,
+      contact: req.body.contact
+    };
+   
+    const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+      new: true,
+      runValidators: true
+      useFindAndModify: false,
+    })
+    res.status(200).json({
+      success: true,
+      message: "User Updated Successfully."
+    })
+  } catch (error){
+    return next(new HttpError("User Update was Unsuccessfull", 500));
+  }
+});
+
+const deleteUser = catchAsync(async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user){
+      res.status(404).json({
+        success: true,
+        message: "User Not Found", 404
+      })
+    }
+    await user.remove();
+    res.status(202).json({
+      success: true,
+      message: "User Deleted Successfully"
+    })
+    
+  } catch (error){
+    return next(new HttpError("User Deletion Unsuccessfull", 500));
+  }
+});
+
+const logout = catchAsync(async (req, res, next) => {
+  res.cookie("token", null,  {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+  
+  res.status(200).json({
+    success: true,
+    message: "Logged Out"
+  })
+});
+
+export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout};
