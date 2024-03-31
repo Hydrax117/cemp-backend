@@ -197,19 +197,20 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 const resetPassword = catchAsync(async (req, res, next) => {
   try {
     const token = req.params.token;
+    console.log(req.params);
     if (!token || typeof token !== 'string') {
       return next(new HttpError('Invalid reset token', 400));
     }
     console.log(token);
 
     // 2. Hash the token securely using a more robust algorithm:
-    /*let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
+    let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
     console.log(passwordResetToken);
-    console.log(token */
+    console.log(token)
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
-      token,
+      passwordResetToken,
       passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
     });
     console.log(user);
