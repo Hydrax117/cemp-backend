@@ -204,7 +204,8 @@ const resetPassword = catchAsync(async (req, res, next) => {
 
     // 2. Hash the token securely using a more robust algorithm:
     let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
-    console.log(hashedToken);
+    console.log(passwordResetToken);
+    console.log(token);
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
