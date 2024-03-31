@@ -223,10 +223,18 @@ const resetPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
-    await user.save({ validateBeforeSave: false });
-    generateToken(user._id, user.email);
+    const message = `Your password reset was successfull. :- \n\nIf you have not initiated this activity, then please contact ${process.env.EMAIL_USER}.`;
 
-    res.status(200).json({ message: 'Password reset successfully' });
+    await user.save({ validateBeforeSave: false });
+ 
+    try {
+        await sendEmail({
+        email: user.email,
+        subject: "React Community Password Reset Successfull.",
+        message,
+    });
+
+    res.status(200).json({ message: 'Password Reset Successfull' });
   } catch (error) {
     console.error('Error resetting password:', error); // Log the error for debugging
     return next(new HttpError('Internal server error', 500));
