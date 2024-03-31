@@ -219,7 +219,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
       return next(new HttpError('Invalid or expired reset token', 400));
     }
     
-    user.password = req.body.password;
+    user.password = await createHashedPassword(req.body.password);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
