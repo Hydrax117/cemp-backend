@@ -126,7 +126,7 @@ const login = catchAsync(async (req, res, next) => {
 
 const getAllUsers = catchAsync(async (req, res, next) => {
     try {
-        const allUsers = await User.find();
+        const users = await User.find();
         res.status(200).json({
             success: true,
             length: users.length,
