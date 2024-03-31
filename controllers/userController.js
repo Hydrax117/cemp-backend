@@ -129,6 +129,10 @@ const login = catchAsync(async (req, res, next) => {
                 userId: existingUser._id,
                 fullName: existingUser.fullName,
                 email: existingUser.email,
+                role: existingUser.role,
+                interests: existingUser.interests,
+                github: existingUser.github,
+                portfolio: existingUser.portfolio,
                 token,
             },
         });
@@ -263,10 +267,11 @@ const updateUser = catchAsync( async(req, res, next) => {
       email: req.body.email,
       interests: req.body.interests,
       github: req.body.github,
+      role: req.body.role,
       portfolio: req.body.portfolio,
       contact: req.body.contact
     };
-   
+   // TODO - req.user.id = req.user.userId
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
       new: true,
       runValidators: true

@@ -17,6 +17,7 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
 
 const authorizeRoles = (...roles) => {
   return (req, res, next)=> {
+    // TODO - Value of req
     console.log(req);
     if (!roles.includes(req.user.role)){
       return next(new HttpError(`Role: ${req.user.role} is not allowed to access this request`, 401));
