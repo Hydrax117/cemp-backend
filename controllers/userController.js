@@ -287,7 +287,7 @@ const deleteUser = catchAsync(async (req, res, next) => {
     if (!user){
       res.status(404).json({
         success: true,
-        message: "User Not Found", 404
+        message: "User Not Found",
       })
     }
     await user.remove();
