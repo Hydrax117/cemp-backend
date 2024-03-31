@@ -170,7 +170,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
 
     let resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-    let resetURL = `${clientUrl}/reset-password/${resetToken}`;
+    let resetURL = `${clientUrl}/api/users/reset-password/${resetToken}`;
 
     const message = `Your password reset token is :- \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
 
@@ -203,13 +203,13 @@ const resetPassword = catchAsync(async (req, res, next) => {
     console.log(token);
 
     // 2. Hash the token securely using a more robust algorithm:
-    let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
+    /*let passwordResetToken = crypto.createHash("sha256").update(token).digest("hex");
     console.log(passwordResetToken);
-    console.log(token);
+    console.log(token */
 
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
-      passwordResetToken,
+      token,
       passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
     });
     console.log(user);
