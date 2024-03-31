@@ -231,9 +231,11 @@ const resetPassword = catchAsync(async (req, res, next) => {
         await sendEmail({
         email: user.email,
         subject: "React Community Password Reset Successfull.",
-        message,
-    });
-
+        message,});
+      
+    } catch (error) {
+      return next( new HttpError("There was an error sending the email.",500));
+    }
     res.status(200).json({ message: 'Password Reset Successfull' });
   } catch (error) {
     console.error('Error resetting password:', error); // Log the error for debugging
