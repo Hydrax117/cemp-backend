@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 const isAuthenticatedUser = catchAsync(async (req, res, next) => {
-  const { token } = req.cookies;
+  //TODO - Changed req.cookies to req.user
+  const { token } = req.user;
   if (!token){
     return next(new HttpError("Please Login to access this resource", 401));
   }
