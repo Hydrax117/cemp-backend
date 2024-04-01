@@ -9,7 +9,7 @@ import crypto from "crypto";
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact, bio, avatar }  = req.body;
+        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact, bio, avatar, specialty }  = req.body;
         
         if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
@@ -53,6 +53,7 @@ const signUp = catchAsync(async (req, res, next) => {
             email,
             password: passwordHash,
             role,
+            specialty,
             interests,
             github,
             portfolio,
@@ -84,6 +85,7 @@ const signUp = catchAsync(async (req, res, next) => {
                 role: newUser.role,
                 bio: newUser.bio,
                 avatar: newUser.avatar,
+                specialty: newUser.specialty,
                 interests: newUser.interests,
                 github: newUser.github,
                 portfolio: newUser.portfolio,
@@ -143,6 +145,7 @@ const login = catchAsync(async (req, res, next) => {
                 role: existingUser.role,
                 bio: existingUser.bio,
                 avatar: existingUser.avatar,
+                specialty: existingUser.specialty,
                 interests: existingUser.interests,
                 github: existingUser.github,
                 portfolio: existingUser.portfolio,
@@ -241,7 +244,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
     // 3. Find user with matching hashed token and valid expiration:
     const user = await User.findOne({
       passwordResetToken,
-      passwordResetExpires: { $gt: Date.now() }, // Use $gt for greater than
+      passwordResetExpires: { $gt: Date.now() },
     });
     console.log(user);
 
@@ -266,7 +269,10 @@ const resetPassword = catchAsync(async (req, res, next) => {
     } catch (error) {
       return next( new HttpError("There was an error sending the email.",500));
     }
-    res.status(200).json({ message: 'Password Reset Successfull' });
+    res.status(200).json({
+      success: true,
+      message: 'Password Reset Successfull'
+    });
   } catch (error) {
     console.error('Error resetting password:', error); // Log the error for debugging
     return next(new HttpError('Internal server error', 500));
@@ -278,6 +284,7 @@ const updateUser = catchAsync( async(req, res, next) => {
     const newUserData = {
       fullName: req.body.fullName,
       email: req.body.email,
+      specialty: req.body.specialty,
       interests: req.body.interests,
       github: req.body.github,
       role: req.body.role,
@@ -291,7 +298,10 @@ const updateUser = catchAsync( async(req, res, next) => {
     })
     res.status(200).json({
       success: true,
-      message: "User Updated Successfully."
+      message: "User Updated Successfully.",
+      data: {
+        user
+      }
     })
   } catch (error){
     return next(new HttpError("User Update was Unsuccessfull", 500));
@@ -356,4 +366,19 @@ const updatePassword = catchAsync (async (req, res, next) => {
   })
 });
 
-export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout, updatePassword};
+const searchUser = catchAsync (async (req, res, next) => {
+  const query = req.query.text;
+  const users = await User.find({ $text: { $search: search}}).select("fullName email github portfolio");
+  if (users.length === 0){
+    return next(new HttpError("Keyword not found", 404));
+  }
+  
+  res.status(200).json({
+    success: true,
+    users : {
+      users
+    }
+  })
+});
+
+export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout, updatePassword, searchUser};

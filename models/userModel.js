@@ -35,6 +35,11 @@ const userSchema = mongoose.Schema(
           default: "https://drive.google.com/file/d/18R8cm3ASWfTwgg994-hkyxZClVX8h0TG/view?usp=drivesdk",
       },
     },*/
+    specialty: {
+      type: String,
+      enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
+      default: "Backend",
+    },
     interests: {
       type: String,
       enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
