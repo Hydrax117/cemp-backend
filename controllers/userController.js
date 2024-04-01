@@ -31,10 +31,10 @@ const signUp = catchAsync(async (req, res, next) => {
             return next(new HttpError("Password must contain Uppercase, LowerCase, Symbol, Number and must be at least 8 characters!", 400));
         }
 
-        // Email Validation with Regular Expression
+        /* Email Validation with Regular Expression
         if (!validEmail(email)) {
             return next(new HttpError("Invalid email address!", 400));
-        }
+        }*/
 
         if (!password || password.trim().length === 0){
             return next(new HttpError("Password cannot be empty", 400));

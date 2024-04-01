@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
+import validator from "validator";
 
 const userSchema = mongoose.Schema(
   {
@@ -11,6 +12,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      validate: [validator.isEmail, "Please Enter a valid Email"],
     },
     password: {
       type: String,
