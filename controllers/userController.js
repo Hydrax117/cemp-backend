@@ -3,14 +3,13 @@ import { catchAsync } from "../utils/catchAsync.js";
 import { sendEmail } from "../utils/email.js";
 import HttpError from "../utils/http-error.js";
 import {generateToken, createHashedPassword, comparePassword} from "../utils/authHelpers.js";
+import { validatePassword, validEmail } from "../utils/password.js";
 import crypto from "crypto";
 
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const { fullName, email, password, interests, github, portfolio, contact }  = req.body;
-        const role = req.body?.role;
-        console.log(fullName, email, password, role);
+        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact }  = req.body;
         
         if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
@@ -23,9 +22,18 @@ const signUp = catchAsync(async (req, res, next) => {
         if (!contact || contact.trim().length === 0){
             return next(new HttpError("Contact cannot be empty!", 400));
         }
+        
+        if (password !== confirmPassword) {
+            return next(new HttpError("Passwords do not match!", 400));
+        }
+        
+        if (!validatePassword(password)) {
+            return next(new HttpError("Password must contain Uppercase, LowerCase, Symbol, Number and must be at least 8 characters!", 400));
+        }
 
-        if (!email || email.trim().length === 0){
-            return next(new HttpError("Email cannot be empty!", 400));
+        // Email Validation with Regular Expression
+        if (!validEmail(email)) {
+            return next(new HttpError("Invalid email address!", 400));
         }
 
         if (!password || password.trim().length === 0){
@@ -56,7 +64,8 @@ const signUp = catchAsync(async (req, res, next) => {
                 email: newUser.email,
                 subject: "Sign-up Notification",
                 message: `Dear ${newUser.fullName}, \nWelcome to React community. Thank you for joining us`,
-        })
+              
+            })
         }catch (error){
             console.error("Error sending email:", error);
             return next(new HttpError("Message not sent Successfully", 500));
@@ -318,4 +327,28 @@ const logout = catchAsync(async (req, res, next) => {
   })
 });
 
-export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout};
+const updatePassword = catchAsync (async (req, res, next) => {
+  const { oldPassword, password, confirmPassword } = req.body;
+  // TODO - req.user.id
+  const user = await User.findById(req.user.userId).select("+password");
+  
+  if (password !== confirmPassword) {
+    return next(new HttpError("Passwords do not match!", 400));
+  }
+        
+  if (!(await comparePassword(oldPassword, user.password))){
+    return next(new HttpError("Old Password incorrect", 401));
+  }
+  
+  user.password = await createHashedPassword(password);
+  await user.save();
+  user.password = undefined;
+  
+  res.status(200).json({
+    success: true,
+    message: "Password Updated Successfully",
+    user
+  })
+});
+
+export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout, updatePassword};
