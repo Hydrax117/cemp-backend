@@ -9,7 +9,7 @@ import crypto from "crypto";
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact }  = req.body;
+        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact, bio, avatar }  = req.body;
         
         if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
@@ -82,6 +82,8 @@ const signUp = catchAsync(async (req, res, next) => {
                 fullName: newUser.fullName,
                 email: newUser.email,
                 role: newUser.role,
+                bio: newUser.bio,
+                avatar: newUser.avatar,
                 interests: newUser.interests,
                 github: newUser.github,
                 portfolio: newUser.portfolio,
@@ -139,6 +141,8 @@ const login = catchAsync(async (req, res, next) => {
                 fullName: existingUser.fullName,
                 email: existingUser.email,
                 role: existingUser.role,
+                bio: existingUser.bio,
+                avatar: existingUser.avatar,
                 interests: existingUser.interests,
                 github: existingUser.github,
                 portfolio: existingUser.portfolio,
@@ -296,15 +300,16 @@ const updateUser = catchAsync( async(req, res, next) => {
 
 const deleteUser = catchAsync(async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
+    await User.findByIdAndDelete(userId);
     
-    if (!user){
+    if (!userId){
       res.status(404).json({
-        success: true,
+        success: false,
         message: "User Not Found",
       })
     }
-    await user.remove();
+    
     res.status(202).json({
       success: true,
       message: "User Deleted Successfully"

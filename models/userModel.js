@@ -10,17 +10,24 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
-    /*avatar: {
-      public_id: { 
-          type: String,
-          required: true,
-      },
-      url: {
+    avatar: {
+      type: String,
+      required: true,
+      default:"https://res.cloudinary.com/formula-web-apps/image/upload/v1623766149/148-1486972_mystery-man-avatar-circle-clipart_kldmy3.jpg"
+    },
+     /* avatar: {
+       public_id: {
+         type: String,
+         required: true,
+         default:"https://res.cloudinary.com/formula-web-apps/image/upload/v1623766149/148-1486972_mystery-man-avatar-circle-clipart_kldmy3.jpg"
+       },
+       url: {
           type: String,
           required: true,
           default: "https://drive.google.com/file/d/18R8cm3ASWfTwgg994-hkyxZClVX8h0TG/view?usp=drivesdk",
@@ -31,6 +38,10 @@ const userSchema = mongoose.Schema(
       enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
       default: "Novice",
     },
+    bio: {
+      type: String,
+      default: "Hello World"
+    }
     github: {
       type: String,
       required: true,
