@@ -367,7 +367,7 @@ const updatePassword = catchAsync (async (req, res, next) => {
 });
 
 const searchUser = catchAsync (async (req, res, next) => {
-  const search = req.query.text;
+  const search = req.body.text;
   const users = await User.find({ $text: { $search: search}}).select("fullName email github portfolio");
   if (users.length === 0){
     return next(new HttpError("Keyword not found", 404));
