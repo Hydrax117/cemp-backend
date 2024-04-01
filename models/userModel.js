@@ -41,7 +41,7 @@ const userSchema = mongoose.Schema(
     bio: {
       type: String,
       default: "Hello World"
-    }
+    },
     github: {
       type: String,
       required: true,
