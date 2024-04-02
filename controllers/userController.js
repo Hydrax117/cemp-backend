@@ -129,10 +129,11 @@ const login = catchAsync(async (req, res, next) => {
             return next(new HttpError("Message not sent Successfully", 500));
        }
 
-
         const token = await generateToken(existingUser._id, existingUser.email);
 
-        res.status(201).cookie(token).json({
+        res.status(201).cookie("token", token, {
+          httpOnly: true
+        }).json({
             success: true,
             message: "User Login Successful",
             user: {
