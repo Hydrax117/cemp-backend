@@ -365,7 +365,7 @@ const updatePassword = catchAsync (async (req, res, next) => {
 
 const searchUser = catchAsync (async (req, res, next) => {
   try {
-    const search = req.query.text || "anon";
+    const search = req.query.text;
     //const text = req.body.text;
     console.log(req.query);
     console.log(req.query.text);
