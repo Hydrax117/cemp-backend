@@ -72,7 +72,7 @@ const signUp = catchAsync(async (req, res, next) => {
         const token = await generateToken(newUser._id, newUser.email);
         console.log(token);
 
-        res.status(200).json({
+        res.status(200).cookie("token", token).json({
             success: true,
             message: "User Created Successfully",
             user: {
@@ -132,7 +132,7 @@ const login = catchAsync(async (req, res, next) => {
 
         const token = await generateToken(existingUser._id, existingUser.email);
 
-        res.status(201).json({
+        res.status(201).cookie("token", token).json({
             success: true,
             message: "User Login Successful",
             user: {
