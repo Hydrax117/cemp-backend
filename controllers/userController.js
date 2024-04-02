@@ -365,17 +365,17 @@ const updatePassword = catchAsync (async (req, res, next) => {
 
 const searchUser = catchAsync (async (req, res, next) => {
   try {
-    //const search = req.query.text;
+    const search = req.query.text;
     //const text = req.body.text;
     //console.log(req.query);
     //console.log(req.query.text);
     //console.log(search);
   /*
-    if (!search){
+    if (search){
       return next(new HttpError("Search term cannot be empty", 404));
     }*/
   
-    const users = await User.find({ $text: { $search: `"${req.query["Musa"] }"`}}).select("id fullName email github portfolio");
+    const users = await User.find({ $text: { $search: search}).select("id fullName email github portfolio");
     
     if (users.length === 0){
       return next(new HttpError("No results for your search", 404));
@@ -383,7 +383,7 @@ const searchUser = catchAsync (async (req, res, next) => {
   
     res.status(200).json({
       success: true,
-      users : {
+      data : {
         users
       }
     })

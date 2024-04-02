@@ -74,6 +74,8 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.index({ fullName: "text", email: "text", github: "text",portfolio: "text", id: "text",}); // Create text index
+
 //Generating password reset token with crypto
 userSchema.methods.createPasswordResetToken = function(){
     let resetToken = crypto.randomBytes(32).toString("hex");
