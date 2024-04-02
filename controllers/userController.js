@@ -342,7 +342,7 @@ const logout = catchAsync(async (req, res, next) => {
 const updatePassword = catchAsync (async (req, res, next) => {
   const { oldPassword, password, confirmPassword } = req.body;
   // TODO - req.user.id
-  const user = await User.findById(req.user.userId).select("+password");
+  const user = await User.findById(req.user.id).select("+password");
   
   if (password !== confirmPassword) {
     return next(new HttpError("Passwords do not match!", 400));
