@@ -375,7 +375,7 @@ const searchUser = catchAsync (async (req, res, next) => {
       return next(new HttpError("Search term cannot be empty", 404));
     }*/
   
-    const users = await User.find({ $text: { $search: search}).select("id fullName email github portfolio");
+    const users = await User.find({ $text: { $search: search }}).select("id fullName email github portfolio");
     
     if (users.length === 0){
       return next(new HttpError("No results for your search", 404));
