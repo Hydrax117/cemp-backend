@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 //const connectToDB = require("./config/database.js");
 //const cors = require("cors");
 //const userRoutes = require("./routes/userRoutes.js");
+ 
 
 dotenv.config();
 connectToDB();
@@ -32,3 +33,4 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+database();
