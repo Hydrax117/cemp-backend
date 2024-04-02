@@ -371,6 +371,9 @@ const searchUser = catchAsync (async (req, res, next) => {
       },
     };
 
+    console.log(query);
+    console.log(searchCriteria);
+    
     if (!query){
       return next(new HttpError("Search term cannot be empty", 404));
     }
