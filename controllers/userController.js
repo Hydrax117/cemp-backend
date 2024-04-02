@@ -364,7 +364,7 @@ const updatePassword = catchAsync (async (req, res, next) => {
 });
 
 const searchUser = catchAsync (async (req, res, next) => {
-  const search = req.query.text;
+  const search = req.body.search;
   
   if (!search){
     return next(new HttpError("Search term cannot be empty", 404));
