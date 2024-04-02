@@ -364,23 +364,29 @@ const updatePassword = catchAsync (async (req, res, next) => {
 });
 
 const searchUser = catchAsync (async (req, res, next) => {
-  const search = req.body.search;
+  try {
+    const search = req.query.text;
+    console.log(req);
+    console.log(req.query);
   
-  if (!search){
-    return next(new HttpError("Search term cannot be empty", 404));
-  }
-  
-  const users = await User.find({ $text: { $search: search}}).select("fullName email github portfolio");
-  if (users.length === 0){
-    return next(new HttpError("No results for your search", 404));
-  }
-  
-  res.status(200).json({
-    success: true,
-    users : {
-      users
+    if (!search){
+      return next(new HttpError("Search term cannot be empty", 404));
     }
-  })
+  
+    const users = await User.find({ $text: { $search: search}}).select("fullName email github portfolio");
+    if (users.length === 0){
+      return next(new HttpError("No results for your search", 404));
+    }
+  
+    res.status(200).json({
+      success: true,
+      users : {
+        users
+      }
+    })
+  }catch (error){
+    return next(new HttpError("An Error was Encountered", 500));
+  }
 });
 
 export { signUp, login, getAllUsers, getUser, resetPassword, forgotPassword, updateUser, deleteUser, logout, updatePassword, searchUser};
