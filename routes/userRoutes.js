@@ -16,7 +16,7 @@ router.put("/reset-password/:token", resetPassword);
 //router.route("/delete/:id").delete(isAuthenticatedUser, authorizeRoles("community-admin"), deleteUser);
 router.put("/me/update-password", updatePassword)
 router.get("/logout", logout);
-router.get("/me/search", searchUser)
+router.post("/me/search", searchUser)
 
 // TODO - Remove unprotected routes
 router.put("/me/update", updateUser);
