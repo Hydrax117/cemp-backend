@@ -132,7 +132,7 @@ const login = catchAsync(async (req, res, next) => {
 
         const token = await generateToken(existingUser._id, existingUser.email);
 
-        res.status(201).cookie("token", token).json({
+        res.status(201).cookie(token).json({
             success: true,
             message: "User Login Successful",
             user: {
@@ -279,14 +279,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
 const updateUser = catchAsync( async(req, res, next) => {
   try {
     const newUserData = {
-      fullName: req.body.fullName,
-      email: req.body.email,
-      specialty: req.body.specialty,
-      interests: req.body.interests,
-      github: req.body.github,
-      role: req.body.role,
-      portfolio: req.body.portfolio,
-      contact: req.body.contact
+      ...req.body
     };
    // TODO - req.user.id = req.user.userId
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
