@@ -9,7 +9,7 @@ import crypto from "crypto";
 const signUp = catchAsync(async (req, res, next) => {
     try {
 
-        const { fullName, email, role, password, confirmPassword, interests, github, portfolio, contact, bio, avatar, specialty }  = req.body;
+        const { fullName, email, password, confirmPassword, github, contact, avatar, ...others }  = req.body;
         
         if (!fullName || fullName.trim().length === 0){
             return next(new HttpError("Fullname cannot be empty!", 400));
@@ -52,12 +52,9 @@ const signUp = catchAsync(async (req, res, next) => {
             fullName,
             email,
             password: passwordHash,
-            role,
-            specialty,
-            interests,
             github,
-            portfolio,
-            contact
+            contact,
+            ...others,
         });
 
         try {
@@ -367,10 +364,15 @@ const updatePassword = catchAsync (async (req, res, next) => {
 });
 
 const searchUser = catchAsync (async (req, res, next) => {
-  const search = req.body.search;
+  const search = req.query.text;
+  
+  if (!search){
+    return next(new HttpError("Search term cannot be empty", 404));
+  }
+  
   const users = await User.find({ $text: { $search: search}}).select("fullName email github portfolio");
   if (users.length === 0){
-    return next(new HttpError("Keyword not found", 404));
+    return next(new HttpError("No results for your search", 404));
   }
   
   res.status(200).json({
