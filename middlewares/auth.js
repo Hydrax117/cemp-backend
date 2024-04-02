@@ -5,7 +5,7 @@ import User from "../models/userModel.js";
 
 const isAuthenticatedUser = catchAsync(async (req, res, next) => {
   //TODO - Changed req.cookies => undefined to req.user
-  const { token } = req.cookies;
+  const token = req.cookies;
   if (!token){
     return next(new HttpError("Please Login to access this resource", 401));
   }
