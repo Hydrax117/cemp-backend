@@ -63,7 +63,7 @@ const signUp = catchAsync(async (req, res, next) => {
             await sendEmail({
                 email: newUser.email,
                 subject: "Sign-up Notification",
-                message: `Dear ${newUser.fullName}, \nWelcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.\nIf you did not initiate this,  send an email to ${helpEmail}`
+                message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.If you did not initiate this,  send an email to ${helpEmail}`
               
             })
         }catch (error){
@@ -125,7 +125,7 @@ const login = catchAsync(async (req, res, next) => {
             await sendEmail({
                 email: existingUser.email,
                 subject: "Login Notification",
-                message: `Dear ${existingUser.fullName}, Your Login was Successful\nWelcome Back!\nYou have logged in successfully to Sterling OneBank on ${new Date().toLocaleString();}.\nIf you did not initiate this, change your password immediately send an email to ${process.env.EMAIL_USER}`,
+                message: `Dear ${existingUser.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to Sterling OneBank on ${new Date().toLocaleString();}. If you did not initiate this, change your password immediately send an email to ${process.env.EMAIL_USER}`,
         })
         }catch (error){
             return next(new HttpError("Message not sent Successfully", 500));
