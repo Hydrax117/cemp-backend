@@ -1,8 +1,10 @@
+import { generateToken } from "../utils/authHelpers.js";
 // Create Token and saving in cookie
 
-const sendToken = (user, statusCode, res) => {
-    const token = user.getJWTToken();
-
+const sendToken = async (user, statusCode, res) => {
+    //const token = user.getJWTToken();
+    const token = await generateToken(user._id, user.email);
+    console.log(token);
     // options for cookie
     const options = {
         expires: new Date(

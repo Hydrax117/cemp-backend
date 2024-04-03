@@ -84,8 +84,8 @@ const signUp = catchAsync(async (req, res, next) => {
             return next(new HttpError("Message not sent Successfully", 500));
         }
 
-        const token = await generateToken(newUser._id, newUser.email);
-        console.log(token);
+        /*const token = await generateToken(newUser._id, newUser.email);
+        console.log(token);*/
 
         sendToken(newUser, 200, "User Created Successfully");
         /*res.status(200)
@@ -146,7 +146,7 @@ const login = catchAsync(async (req, res, next) => {
             return next(new HttpError("Message not sent Successfully", 500));
         }
 
-        const token = await generateToken(existingUser._id, existingUser.email);
+        /*const token = await generateToken(existingUser._id, existingUser.email);*/
 
         sendToken(existingUser, 201, "User Login Successful");
         /*res.status(201)
