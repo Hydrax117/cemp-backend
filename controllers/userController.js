@@ -56,12 +56,14 @@ const signUp = catchAsync(async (req, res, next) => {
             contact,
             ...others,
         });
-
+        const currentDate = new Date().toLocaleString();
+        const helpEmail = process.env.EMAIL_USER;
+        
         try {
             await sendEmail({
                 email: newUser.email,
                 subject: "Sign-up Notification",
-                message: `Dear ${newUser.fullName}, \nWelcome to React community. Thank you for joining us, You have Successfully registered on ${new Date().toLocaleString();}.\nIf you did not initiate this,  send an email to ${process.env.EMAIL_USER}.`,
+                message: `Dear ${newUser.fullName}, \nWelcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.\nIf you did not initiate this,  send an email to ${helpEmail}`
               
             })
         }catch (error){
