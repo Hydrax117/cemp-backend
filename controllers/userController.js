@@ -1,8 +1,8 @@
-import User from "../models/userModel";
-import { catchAsync } from "../utils/catchAsync";
-import { sendEmail } from "../utils/email";
-import { sendToken } from "../utils/jwtToken";
-import HttpError from "../utils/http-error";
+import User from "../models/userModel.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import { sendEmail } from "../utils/email.js";
+import { sendToken } from "../utils/jwtToken.js";
+import HttpError from "../utils/http-error.js";
 import {
     generateToken,
     createHashedPassword,
