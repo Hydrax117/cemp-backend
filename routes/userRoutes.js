@@ -14,7 +14,6 @@ router.put("/reset-password/:token", resetPassword);
 router.put("/me/update", isAuthenticatedUser, updateUser);
 router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 router.route("/delete/:id").delete(isAuthenticatedUser, authorizeRoles("community-admin"), deleteUser);
-router.put("/me/update-password", updatePassword)
 router.get("/logout", logout);
 router.get("/me/search", searchUser)
 
