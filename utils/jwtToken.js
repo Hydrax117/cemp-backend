@@ -5,17 +5,13 @@ const sendToken = async (user, statusCode, res) => {
     //const token = user.getJWTToken();
     const token = await generateToken(user._id, user.email);
     console.log(token);
-    // options for cookie
-    const options = {
-        expiresIn: new Date(
-            Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true
-    };
+    console.log("sendToken generateToken(*,*) above");
 
     res.status(statusCode).cookie("token", token).json({
         success: true,
-        user,
+        data: {
+          user
+        },
         token
     });
 };

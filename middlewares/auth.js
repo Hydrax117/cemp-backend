@@ -7,6 +7,7 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
     const token = req.cookies.token;
     console.log(req.cookies);
     console.log(token);
+    console.log("req.cookies and token")
     
     if (!token) {
         return next(new HttpError("Please Login to access this resource", 401));
@@ -14,6 +15,7 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
 
     const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
     console.log(decodedData);
+    console.log("decodeData from auth.js")
     req.user = await User.findById(decodedData.id);
 
     next();
