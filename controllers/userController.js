@@ -131,7 +131,7 @@ const login = catchAsync(async (req, res, next) => {
 
         const token = await generateToken(existingUser._id, existingUser.email);
 
-        res.status(201).cookie(token, {
+        res.status(201).cookie("token", token, {
           httpOnly: true
         }).json({
             success: true,
