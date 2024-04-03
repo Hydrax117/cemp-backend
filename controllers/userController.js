@@ -1,7 +1,8 @@
-import User from "../models/userModel.js";
-import { catchAsync } from "../utils/catchAsync.js";
-import { sendEmail } from "../utils/email.js";
-import HttpError from "../utils/http-error.js";
+import User from "../models/userModel";
+import { catchAsync } from "../utils/catchAsync";
+import { sendEmail } from "../utils/email";
+import { sendToken } from "../utils/jwtToken";
+import HttpError from "../utils/http-error";
 import {
     generateToken,
     createHashedPassword,
@@ -86,7 +87,8 @@ const signUp = catchAsync(async (req, res, next) => {
         const token = await generateToken(newUser._id, newUser.email);
         console.log(token);
 
-        res.status(200)
+        sendToken(newUser, 200, "User Created Successfully");
+        /*res.status(200)
             .cookie("token", token)
             .json({
                 success: true,
@@ -104,7 +106,7 @@ const signUp = catchAsync(async (req, res, next) => {
                     github: newUser.github,
                     portfolio: newUser.portfolio,
                 }
-            });
+            });*/
     } catch (error) {
         console.error("Error creating user:", error);
         return next(new HttpError("Unable to create user, try again.", 500));
@@ -146,7 +148,8 @@ const login = catchAsync(async (req, res, next) => {
 
         const token = await generateToken(existingUser._id, existingUser.email);
 
-        res.status(201)
+        sendToken(existingUser, 201, "User Login Successful");
+        /*res.status(201)
             .cookie("token", token , {
                 httpOnly: true
             })
@@ -166,7 +169,7 @@ const login = catchAsync(async (req, res, next) => {
                     github: existingUser.github,
                     portfolio: existingUser.portfolio
                 }
-            });
+            });*/
     } catch (error) {
         return next(new HttpError("Unable to login, try again", 500));
     }
