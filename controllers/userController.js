@@ -120,12 +120,13 @@ const login = catchAsync(async (req, res, next) => {
         if (!(await comparePassword(password, existingUser.password))){
             return next(new HttpError("Passwords do not match", 400));
         }
-
+        const currentDate = new Date().toLocaleString();
+        const helpEmail = process.env.EMAIL_USER;
         try {
             await sendEmail({
                 email: existingUser.email,
                 subject: "Login Notification",
-                message: `Dear ${existingUser.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to Sterling OneBank on ${new Date().toLocaleString();}. If you did not initiate this, change your password immediately send an email to ${process.env.EMAIL_USER}`,
+                message: `Dear ${existingUser.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to Sterling OneBank on ${currentDate}. If you did not initiate this, change your password immediately send an email to ${helpEmail}`,
         })
         }catch (error){
             return next(new HttpError("Message not sent Successfully", 500));
