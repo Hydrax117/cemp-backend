@@ -4,30 +4,35 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 const isAuthenticatedUser = catchAsync(async (req, res, next) => {
-  //TODO - Remove console.log Changed req.cookies => undefined to req.user
-  const token = req.headers.Cookie;
-  //const token = req.cookie;
-  console.log(token);
-  if (!token){
-    return next(new HttpError("Please Login to access this resource", 401));
-  }
-  
-  const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
-  console.log(decodedData)
-  req.user = await User.findById(decodedData.id);
-  
-  next();
+    const token = req.cookies.token;
+    console.log(req.cookies);
+    console.log(token);
+    
+    if (!token) {
+        return next(new HttpError("Please Login to access this resource", 401));
+    }
+
+    const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decodedData);
+    req.user = await User.findById(decodedData.id);
+
+    next();
 });
 
 const authorizeRoles = (...roles) => {
-  return (req, res, next)=> {
-    // TODO - Value of req
-    console.log(req);
-    if (!roles.includes(req.user.role)){
-      return next(new HttpError(`Role: ${req.user.role} is not allowed to access this request`, 401));
-    }
-    next();
-  }
+    return (req, res, next) => {
+        // TODO - Value of req
+        console.log(req);
+        if (!roles.includes(req.user.role)) {
+            return next(
+                new HttpError(
+                    `Role: ${req.user.role} is not allowed to access this request`,
+                    401
+                )
+            );
+        }
+        next();
+    };
 };
 
-export {isAuthenticatedUser, authorizeRoles};
+export { isAuthenticatedUser, authorizeRoles };
