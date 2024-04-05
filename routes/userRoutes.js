@@ -1,7 +1,18 @@
 import { Router } from "express";
-import  { authorizeRoles, isAuthenticatedUser } from "../middlewares/auth.js";
-import { signUp, login, getAllUsers, getUser, forgotPassword, resetPassword, updateUser, deleteUser, logout, updatePassword, searchUser } from "../controllers/userController.js";
-
+import { authorizeRoles, isAuthenticatedUser } from "../middlewares/auth.js";
+import {
+  signUp,
+  login,
+  getAllUsers,
+  getUser,
+  forgotPassword,
+  resetPassword,
+  updateUser,
+  deleteUser,
+  logout,
+  updatePassword,
+  searchUser,
+} from "../controllers/userController.js";
 //TODO - import { requireSignIn } from "../helpers/authHelpers.js";
 const router = Router();
 
@@ -14,13 +25,11 @@ router.put("/reset-password/:token", resetPassword);
 //router.put("/me/update", isAuthenticatedUser, updateUser);
 //router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 //router.route("/delete/:id").delete(isAuthenticatedUser, authorizeRoles("community-admin"), deleteUser);
-router.put("/me/update-password", updatePassword)
+router.put("/me/update-password", updatePassword);
 router.get("/logout", logout);
-router.get("/me/search", searchUser)
+router.get("/me/search", searchUser);
 
 // TODO - Remove unprotected routes
 router.put("/me/update", updateUser);
 router.delete("/delete/:id", deleteUser);
-
 export default router;
-
