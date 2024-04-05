@@ -9,12 +9,6 @@ import eventModel from "./models/eventModel.js";
 import moment from "moment";
 import eventRoutes from "./routes/eventRoutes.js";
 
-//import { updateEventStatuses } from "./models/eventUpdate.js";
-//const express = require("express");
-//const connectToDB = require("./config/database.js");
-//const cors = require("cors");
-//const userRoutes = require("./routes/userRoutes.js");
-
 dotenv.config();
 connectToDB();
 // Create an Express application

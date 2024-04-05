@@ -65,10 +65,15 @@ const searchEvent = catchAsync(async (req, res,next) => {
     };
 
     var findEvent = await eventModel.find(searchCriteria);
-    if (findEvent) {
+    if (findEvent.length > 0) {
       return res.json({
         success: true,
         data: findEvent,
+      });
+    }else{
+      return res.json({
+        success: true,
+        message:"no events found"
       });
     }
   } catch (error) {
@@ -120,4 +125,34 @@ const registeredUsers = catchAsync(async (req, res,next) => {
     return next(new HttpError(error.message))
   }});
 
-export { createNewEvent,getOneEvent,searchEvent,eventRegistration,getAllEvents,registeredUsers };
+
+const updateEvent = catchAsync(async (req, res,next) => {
+  try {
+    const updatedEvent = await eventModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedEvent) {
+      return next(new HttpError("event not found",404))
+    }
+    res.json(updatedEvent);
+  } catch (error) {
+    return next(new HttpError(error.message,500))
+  }
+})
+
+
+const deleteEvent = catchAsync( async (req, res,next) => {
+  try {
+    const deletedEvent = await eventModel.findByIdAndDelete(req.params.id);
+    if (!deletedEvent) {
+      return next(new HttpError("event not found",404))
+    }
+    res.json({ message: "Event deleted" });
+  } catch (error) {
+    return next(new HttpError(error.message,500))
+  }
+})
+
+export { createNewEvent,getOneEvent,searchEvent,deleteEvent,updateEvent,eventRegistration,getAllEvents,registeredUsers };
