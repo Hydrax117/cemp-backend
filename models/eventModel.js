@@ -26,6 +26,13 @@ const EventShema = mongoose.Schema({
     ],
     default: "Novice",
   },
+  startTime:{type:Date},
+  endTime:{ type:Date},
+  location:{type:String},
+  organizer:{type:String},
+  speakers:[],
+  imageUrl:{type:String},
+  createdAt:{type:Date,default:Date.now}
 });
 EventShema.index({ title: "text", description: "text", field: "text" }); // Create text index
 
