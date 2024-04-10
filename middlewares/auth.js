@@ -4,21 +4,41 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 const isAuthenticatedUser = catchAsync(async (req, res, next) => {
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith("Bearer")
+    ) {
+      // TODO - split("=")
+        const token = req.headers.authorization.split(" ")[1];
+        if (!token) {
+            return next(
+                new HttpError("Please Login to access this resource", 401)
+            );
+        }
+        const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decodedData);
+        console.log("decodeData from auth.js");
+        req.user = await User.findById(decodedData.id);
+
+        next();
+    }
+    /*/!new above
+    
     const token = req.cookies.token;
     console.log(req.cookies);
     console.log(token);
-    console.log("req.cookies and token")
-    
+    console.log("req.cookies and token");
+
     if (!token) {
         return next(new HttpError("Please Login to access this resource", 401));
     }
 
     const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
     console.log(decodedData);
-    console.log("decodeData from auth.js")
+    console.log("decodeData from auth.js");
     req.user = await User.findById(decodedData.id);
 
-    next();
+    next();*/
 });
 
 const authorizeRoles = (...roles) => {
