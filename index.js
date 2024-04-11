@@ -62,7 +62,7 @@ const updateEventStatuses = async () => {
   console.log("Event statuses updated");
 };
 cron.schedule("47 12 * * *", deletePastEvents);
-cron.schedule("35 14 * * *", updateEventStatuses);
+cron.schedule("19 13 * * *", updateEventStatuses);
 
 
 

@@ -96,6 +96,9 @@ const eventRegistration = catchAsync( async (req, res,next) => {
     if (event.interestedUsers.includes(username)) {
       return next(new HttpError("user already registered for this event",500));
     }
+    if (event.maxAttendees && event.interestedUsers.length >= event.maxAttendees) {
+      return next(new HttpError("event is full"));
+    }
 
     event.interestedUsers.push(username);
     const updatedEvent = await event.save();
@@ -105,6 +108,31 @@ const eventRegistration = catchAsync( async (req, res,next) => {
   }
 });
 
+const eventUnRegister = catchAsync(async (req,res,next)=>{
+  const eventId = req.params.id;
+  const userId = req.query.id;
+  
+  try {
+    const event = await eventModel.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+  
+    const userIndex = event.interestedUsers.indexOf(userId);
+    if (userIndex === -1) {
+      return res.status(400).json({ message: 'Not registered for this event' });
+    }
+  
+    event.interestedUsers.splice(userIndex, 1);
+  
+    await event.save();
+    res.json({ message: 'Successfully unregistered from the event' });
+  } catch (error) {
+   return next(new HttpError(error.message))
+  }
+  
+  
+})
 
 const registeredUsers = catchAsync(async (req, res,next) => {
   const eventId = req.params.id;
@@ -155,4 +183,5 @@ const deleteEvent = catchAsync( async (req, res,next) => {
   }
 })
 
-export { createNewEvent,getOneEvent,searchEvent,deleteEvent,updateEvent,eventRegistration,getAllEvents,registeredUsers };
+
+export { createNewEvent,getOneEvent,searchEvent,deleteEvent,updateEvent,eventRegistration,getAllEvents,registeredUsers,eventUnRegister };

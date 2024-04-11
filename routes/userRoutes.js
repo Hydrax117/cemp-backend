@@ -12,6 +12,7 @@ import {
   logout,
   updatePassword,
   searchUser,
+  registeredEvents,
 } from "../controllers/userController.js";
 //TODO - import { requireSignIn } from "../helpers/authHelpers.js";
 const router = Router();
@@ -19,7 +20,7 @@ const router = Router();
 router.post("/signup", signUp);
 router.post("/login", login);
 router.get("/users", getAllUsers);
-router.get("/:id", getUser);
+router.get("/me/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 //router.put("/me/update", isAuthenticatedUser, updateUser);
@@ -28,6 +29,7 @@ router.put("/reset-password/:token", resetPassword);
 router.put("/me/update-password", updatePassword);
 router.get("/logout", logout);
 router.get("/me/search", searchUser);
+router.get("/events",registeredEvents)
 
 // TODO - Remove unprotected routes
 router.put("/me/update", updateUser);

@@ -9,6 +9,7 @@ import {
 } from "../utils/authHelpers.js";
 import { validatePassword, validEmail } from "../utils/password.js";
 import crypto from "crypto";
+import eventModel from "../models/eventModel.js";
 
 const signUp = catchAsync(async (req, res, next) => {
   try {
@@ -412,6 +413,18 @@ const searchUser = catchAsync(async (req, res, next) => {
   }
 });
 
+const registeredEvents = catchAsync(async (req,res,next)=>{
+  const userId = req.query.id; 
+  console.log("id",userId)
+  try {
+    const events = await eventModel.find({ interestedUsers: userId }); // Find events where user ID is present
+    res.json(events);
+  } catch (err) {
+   return next(new HttpError(err.message))
+  }
+
+})
+
 export {
   signUp,
   login,
@@ -424,4 +437,5 @@ export {
   logout,
   updatePassword,
   searchUser,
+  registeredEvents
 };

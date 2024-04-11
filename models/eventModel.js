@@ -26,15 +26,16 @@ const EventShema = mongoose.Schema({
     ],
     default: "Novice",
   },
-  startTime:{type:Date},
-  endTime:{ type:Date},
+  startTime:{type:String},
+  endTime:{ type:String},
   location:{type:String},
   organizer:{type:String},
   speakers:[],
   imageUrl:{type:String},
-  createdAt:{type:Date,default:Date.now}
+  createdAt:{type:Date,default:Date.now},
+  maxAttendees: { type: Number }, // Maximum number of attendees allowed (optional)
 });
-EventShema.index({ title: "text", description: "text", field: "text" }); // Create text index
+EventShema.index({ title: "text", description: "text", area: "text",location:"text" }); // Create text index
 
 EventShema.pre("save", function (next) {
   // const event = this;
