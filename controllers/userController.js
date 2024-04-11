@@ -416,9 +416,22 @@ const searchUser = catchAsync(async (req, res, next) => {
 const registeredEvents = catchAsync(async (req,res,next)=>{
   const userId = req.query.id; 
   console.log("id",userId)
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
+
   try {
-    const events = await eventModel.find({ interestedUsers: userId }); // Find events where user ID is present
-    res.json(events);
+    const totalEvents = await eventModel.countDocuments({ interestedUsers: userId }); // Count total events
+    const events = await eventModel.find({ interestedUsers: userId })
+      .skip((page - 1) * limit) // Skip events for previous pages
+      .limit(limit) // Limit results to current page
+      .sort({ date: 1 }); // Sort by date (optional)
+    const totalPages = Math.ceil(totalEvents / limit);
+
+     res.json({
+      events,
+      totalPages,
+      currentPage: page
+    });
   } catch (err) {
    return next(new HttpError(err.message))
   }

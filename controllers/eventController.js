@@ -28,9 +28,21 @@ const createNewEvent = catchAsync(async (req, res, next) => {
 
 
 const getAllEvents = catchAsync(async (req, res,next) => {
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
   try {
-    const events = await eventModel.find();
-    res.json(events);
+    const totalEvents = await eventModel.countDocuments(); // Count total events
+    const events = await eventModel.find()
+    .skip((page - 1) * limit) // Skip events for previous pages
+    .limit(limit) // Limit results to current page
+    .sort({ date: 1 }); // Sort by date (optional)
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    res.json({
+      events,
+      totalPages,
+      currentPage: page
+    });
   } catch (err) {
     return next(new HttpError(err.message))
   }
@@ -59,6 +71,9 @@ const getOneEvent = catchAsync(async (req, res,next) => {
 
 const searchEvent = catchAsync(async (req, res,next) => {
   var query = req.query.text;
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
+
   try {
     const searchCriteria = {
       $text: { $search: query },
@@ -66,15 +81,26 @@ const searchEvent = catchAsync(async (req, res,next) => {
 
     var findEvent = await eventModel.find(searchCriteria);
     if (findEvent.length > 0) {
+      const totalEvents = await eventModel.countDocuments(searchCriteria); // Count total events
+      const events = await eventModel.find(searchCriteria)
+        .skip((page - 1) * limit) // Skip events for previous pages
+        .limit(limit) // Limit results to current page
+        .sort({ date: 1 }); // Sort by date  
+      const totalPages = Math.ceil(totalEvents / limit);
       return res.json({
-        success: true,
-        data: findEvent,
+        events,
+        totalPages,
+        currentPage: page
       });
-    }else{
-      return res.json({
+    }
+    else
+    {
+      return res.json(
+        {
         success: true,
         message:"no events found"
-      });
+      }
+    );
     }
   } catch (error) {
    return next(new HttpError(error.message))
