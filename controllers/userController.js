@@ -322,6 +322,28 @@ const updateUser = catchAsync(async (req, res, next) => {
     }
 });
 
+const updateUserRole = catchAsync(async (req, res, next) => {
+    try {
+        const newUserData = {
+            ...req.body
+        };
+        //const role = req.body.role;
+        const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+            new: true,
+            runValidators: true
+        });
+        res.status(200).json({
+            success: true,
+            message: "User Role Updated Successfully.",
+            data: {
+                user
+            }
+        });
+    } catch (error) {
+        return next(new HttpError("User Role Update was Unsuccessfull", 500));
+    }
+});
+
 const deleteUser = catchAsync(async (req, res, next) => {
     try {
         const userId = req.params.id;
@@ -424,5 +446,6 @@ export {
     deleteUser,
     logout,
     updatePassword,
+    updateUserRole,
     searchUser
 };
