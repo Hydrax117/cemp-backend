@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-const generateToken = (userId, email) => {
-  const token = jwt.sign({ userId, email }, process.env.JWT_SECRET, {
+const generateToken = (userId) => {
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 

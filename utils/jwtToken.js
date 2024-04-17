@@ -3,11 +3,12 @@ import { generateToken } from "../utils/authHelpers.js";
 
 const sendToken = async (user, statusCode, res) => {
     //const token = user.getJWTToken();
-    const token = await generateToken(user._id, user.email);
+    const token = await generateToken(user._id);
     console.log(token);
     console.log("sendToken generateToken(*,*) above");
 
-    res.status(statusCode).cookie(token, { secure: false }).json({
+    // res.status(statusCode).cookie(token, { secure: false }).json({
+    res.status(statusCode).send({
         success: true,
         data: {
             user

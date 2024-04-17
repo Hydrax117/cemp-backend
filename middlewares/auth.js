@@ -9,7 +9,9 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
         req.headers.authorization.startsWith("Bearer")
     ) {
       // TODO - split("=")
-        const token = req.headers.authorization.split(" ")[1];
+        const token = req.headers.authorization.replace("Bearer ", "")
+        console.log(token)
+        console.log("token: auth middleware")
         if (!token) {
             return next(
                 new HttpError("Please Login to access this resource", 401)
