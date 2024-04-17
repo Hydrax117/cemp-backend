@@ -323,12 +323,12 @@ const updateUser = catchAsync(async (req, res, next) => {
 });
 
 const updateUserRole = catchAsync(async (req, res, next) => {
+    const newUserData = {
+        ...req.body
+    };
+    
     try {
-        const newUserData = {
-            ...req.body
-        };
-        //const role = req.body.role;
-        const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+        const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
             new: true,
             runValidators: true
         });
