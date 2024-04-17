@@ -8,7 +8,7 @@ const sendToken = async (user, statusCode, res) => {
     console.log("sendToken generateToken(*,*) above");
 
     //res.status(statusCode).send({
-    res.status(statusCode).cookie(token, { secure: false }).json({
+    res.status(statusCode).cookie("token", token, { secure: false }).json({
         success: true,
         data: {
             user

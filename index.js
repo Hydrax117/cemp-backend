@@ -16,10 +16,10 @@ connectToDB();
 const app = express();
 
 //Middlewares
-app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //API routes
 app.use("/api/users", userRoutes);

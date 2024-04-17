@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 const isAuthenticatedUser = catchAsync(async (req, res, next) => {
-    if (
+    /* if (
         req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer")
     ) {
@@ -24,8 +24,8 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
 
         next();
     }
-    /*/!new above
-    
+    */
+
     const token = req.cookies.token;
     console.log(req.cookies);
     console.log(token);
@@ -40,7 +40,7 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
     console.log("decodeData from auth.js");
     req.user = await User.findById(decodedData.id);
 
-    next();*/
+    next();
 });
 
 const authorizeRoles = (...roles) => {
