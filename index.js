@@ -4,11 +4,11 @@ import { connectToDB } from "./config/database.js";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 //const express = require("express");
 //const connectToDB = require("./config/database.js");
 //const cors = require("cors");
 //const userRoutes = require("./routes/userRoutes.js");
- 
 
 dotenv.config();
 connectToDB();
@@ -16,20 +16,21 @@ connectToDB();
 const app = express();
 
 //Middlewares
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 //API routes
 app.use("/api/users", userRoutes);
 
 // Define routes
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+    res.send("Hello, World!");
 });
 
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

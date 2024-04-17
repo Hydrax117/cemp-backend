@@ -146,9 +146,9 @@ const login = catchAsync(async (req, res, next) => {
             return next(new HttpError("Message not sent Successfully", 500));
         }
 
-        /*const token = await generateToken(existingUser._id, existingUser.email);*/
+        /*const token = await generateToken(existingUser._id);*/
 
-        sendToken(existingUser, 201, res);
+        sendToken(existingUser, 200, res);
         /*res.status(201)
             .cookie("token", token , {
                 httpOnly: true
