@@ -12,6 +12,7 @@ import {
 } from "../utils/authHelpers.js";
 import { validatePassword, validEmail } from "../utils/password.js";
 import crypto from "crypto";
+import eventModel from "../models/eventModel.js";
 
 const currentDate = new Date().toLocaleString();
 const helpEmail = process.env.EMAIL_USER;
@@ -114,7 +115,7 @@ const signUp = catchAsync(async (req, res, next) => {
         console.error("Error creating user:", error);
         return next(new HttpError("Unable to create user, try again.", 500));
 
-     }
+     }})
 
 const login = catchAsync(async (req, res, next) => {
     try {
@@ -444,6 +445,31 @@ const searchUser = catchAsync(async (req, res, next) => {
         return next(new HttpError("An Error was Encountered", 500));
     }
 });
+
+const registeredEvents = catchAsync(async (req,res,next)=>{
+  const userId = req.query.id; 
+  console.log("id",userId)
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
+
+  try {
+    const totalEvents = await eventModel.countDocuments({ interestedUsers: userId }); // Count total events
+    const events = await eventModel.find({ interestedUsers: userId })
+      .skip((page - 1) * limit) // Skip events for previous pages
+      .limit(limit) // Limit results to current page
+      .sort({ date: 1 }); // Sort by date (optional)
+    const totalPages = Math.ceil(totalEvents / limit);
+
+     res.json({
+      events,
+      totalPages,
+      currentPage: page
+    });
+  } catch (err) {
+   return next(new HttpError(err.message))
+  }
+
+})
 
 export {
     signUp,

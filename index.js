@@ -12,13 +12,6 @@ import eventModel from "./models/eventModel.js";
 import moment from "moment";
 import eventRoutes from "./routes/eventRoutes.js";
 
-//import { updateEventStatuses } from "./models/eventUpdate.js";
-
-//const express = require("express");
-//const connectToDB = require("./config/database.js");
-//const cors = require("cors");
-//const userRoutes = require("./routes/userRoutes.js");
-
 dotenv.config();
 connectToDB();
 // Create an Express application
@@ -54,35 +47,28 @@ const deletePastEvents = async () => {
 
 // Update event status automatically every day (can be customized)
 const updateEventStatuses = async () => {
-  const today = moment().startOf("day"); // Get today's date without time
-  console.log(today);
   const tomorrow = moment().add(1, "days").startOf("day"); // Get tomorrow's date
-  await eventModel.updateMany(
-    {},
-    {
-      $set: {
-        status: {
-          $cond: [
-            { $lt: ["$date", today] }, // past (remaining)
-            "past",
-            {
-              $eq: [
-                moment({ date: "$date" }).format("YYYY-MM-DD"),
-                today.format("YYYY-MM-DD"),
-              ],
-            }, // today
-            "today",
-            "upcoming", // upcoming
-          ],
-        },
-      },
+  const events = await eventModel.find()
+   for(const event of events){
+  const today = moment().startOf("day"); // Get today's date without time
+ 
+    if (event.date < today) {
+      event.status = 'Past';
     }
-  );
+    else if (event.date.toString().slice(0,15) === today.toString().slice(0,15)) {
+      event.status = 'Today';
+    } else if (event.date.toString().slice(0,15) === tomorrow.toString().slice(0,15)) {
+      event.status = 'Tomorrow';
+    } else {
+      event.status = 'Upcoming';
+    }
+    await event.save()
+  }
 
   console.log("Event statuses updated");
 };
 cron.schedule("47 12 * * *", deletePastEvents);
-cron.schedule("47 12 * * *", updateEventStatuses);
+cron.schedule("19 13 * * *", updateEventStatuses);
 
 
 
