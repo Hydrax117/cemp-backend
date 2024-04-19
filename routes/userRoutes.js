@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles, isAuthenticatedUser } from "../middlewares/auth.js";
 import {
+ 
     signUp,
     login,
     getAllUsers,
@@ -15,6 +16,7 @@ import {
     searchUser
 } from "../controllers/userController.js";
 
+ 
 //TODO - import { requireSignIn } from "../helpers/authHelpers.js";
 const router = Router();
 
@@ -24,6 +26,7 @@ router.get("/users", getAllUsers);
 router.get("/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
+ 
 router.put("/me/update", isAuthenticatedUser, updateUser);
 router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 router
@@ -35,4 +38,5 @@ router
 router.get("/logout", logout);
 router.get("/me/search", searchUser);
 
+ 
 export default router;

@@ -4,9 +4,11 @@ import { sendEmail } from "../utils/email.js";
 import { sendToken } from "../utils/jwtToken.js";
 import HttpError from "../utils/http-error.js";
 import {
+
     generateToken,
     createHashedPassword,
     comparePassword
+
 } from "../utils/authHelpers.js";
 import { validatePassword, validEmail } from "../utils/password.js";
 import crypto from "crypto";
@@ -15,6 +17,7 @@ const currentDate = new Date().toLocaleString();
 const helpEmail = process.env.EMAIL_USER;
 
 const signUp = catchAsync(async (req, res, next) => {
+
     try {
         const {
             fullName,
@@ -110,8 +113,8 @@ const signUp = catchAsync(async (req, res, next) => {
     } catch (error) {
         console.error("Error creating user:", error);
         return next(new HttpError("Unable to create user, try again.", 500));
-    }
-});
+
+     }
 
 const login = catchAsync(async (req, res, next) => {
     try {
@@ -208,7 +211,7 @@ const getUser = catchAsync(async (req, res, next) => {
 });
 
 const forgotPassword = catchAsync(async (req, res, next) => {
-    const clientUrl = process.env.BASE_URL;
+  const clientUrl = process.env.BASE_URL;
 
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -217,11 +220,13 @@ const forgotPassword = catchAsync(async (req, res, next) => {
         );
     }
 
-    let resetToken = user.createPasswordResetToken();
-    await user.save({ validateBeforeSave: false });
-    let resetURL = `${clientUrl}/api/users/reset-password/${resetToken}`;
 
-    const message = `Your password reset token is: \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
+  let resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+  let resetURL = `${clientUrl}/api/users/reset-password/${resetToken}`;
+
+  const message = `Your password reset token is: \n\n ${resetURL} \n\nIf you have not requested this email then, please ignore it.`;
+
 
     try {
         await sendEmail({
@@ -267,15 +272,20 @@ const resetPassword = catchAsync(async (req, res, next) => {
         });
         console.log(user);
 
+  
         if (!user) {
             return next(new HttpError("Invalid or expired reset token", 400));
         }
+
 
         user.password = await createHashedPassword(req.body.password);
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
 
+  
+
         const message = `Your password reset was successfull: \n\nIf you have not initiated this activity, please contact ${process.env.EMAIL_USER}.`;
+
 
         await user.save({ validateBeforeSave: false });
 
@@ -448,4 +458,5 @@ export {
     updatePassword,
     updateUserRole,
     searchUser
+
 };
