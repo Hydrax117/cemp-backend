@@ -13,8 +13,10 @@ import {
     logout,
     updatePassword,
     updateUserRole,
-    searchUser
+    searchUser,
+    registeredEvents
 } from "../controllers/userController.js";
+
 
  
 //TODO - import { requireSignIn } from "../helpers/authHelpers.js";

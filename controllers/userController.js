@@ -483,6 +483,7 @@ export {
     logout,
     updatePassword,
     updateUserRole,
-    searchUser
+    searchUser,
+    registeredEvents
 
 };
