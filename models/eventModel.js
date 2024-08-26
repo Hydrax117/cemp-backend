@@ -14,6 +14,11 @@ const EventShema = mongoose.Schema({
     type: String,
      
   },
+  
+  imageUrl: {
+    type: String,
+    required: true,
+  },
   area: {
     type: String,
     enum: [
@@ -31,7 +36,6 @@ const EventShema = mongoose.Schema({
   location:{type:String},
   organizer:{type:String},
   speakers:[],
-  imageUrl:{type:String},
   createdAt:{type:Date,default:Date.now},
   maxAttendees: { type: Number }, // Maximum number of attendees allowed (optional)
 });
