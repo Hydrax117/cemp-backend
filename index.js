@@ -12,8 +12,6 @@ import eventModel from "./models/eventModel.js";
 import moment from "moment";
 import eventRoutes from "./routes/eventRoutes.js";
 
-import googleAuthRoutes from "./routes/googleAuthRoutes.js";
-
 import fs from "fs";
 import path, { dirname } from "path";
 dotenv.config();
@@ -31,7 +29,6 @@ app.use(cookieParser());
 //API routes
 app.use("/api/users", userRoutes);
 app.use("/api/event", eventRoutes);
-app.use("/", googleAuthRoutes);
 
 // Define routes
 app.get("/", (req, res) => {
