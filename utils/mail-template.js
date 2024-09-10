@@ -6,7 +6,7 @@ const HTML_TEMPLATE = (text) => {
     <html>
       <head>
         <meta charset="utf-8">
-        <title> Email Template</title>
+        <title>  Email Template</title>
         <style>
           .container {
             width: 100%;

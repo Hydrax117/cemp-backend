@@ -4,14 +4,14 @@ import { connectToDB } from "./config/database.js";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
-
+import cloudinary from "cloudinary";
 import cookieParser from "cookie-parser";
 
 import cron from "node-cron";
 import eventModel from "./models/eventModel.js";
 import moment from "moment";
 import eventRoutes from "./routes/eventRoutes.js";
-
+import multer from "multer";
 import fs from "fs";
 import path, { dirname } from "path";
 dotenv.config();
@@ -25,6 +25,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+
+cloudinary.config({
+  cloud_name: process.env.cloud_name, // Replace with your Cloudinary cloud name
+  api_key: process.env.api_key, // Replace with your Cloudinary API key
+  api_secret: process.env.api_secret, // Replace with your Cloudinary API secret
+});
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 //API routes
 app.use("/api/users", userRoutes);
@@ -48,6 +66,15 @@ app.get("/folder-contents", (req, res) => {
   });
 });
 
+app.post("/uplod", upload.single("image"), async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path);
+    res.json({ url: result.secure_url });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error uploading image" });
+  }
+});
 // Endpoint to serve the image
 app.get("/uploads/:filename", (req, res) => {
   const filename = req.params.filename;
