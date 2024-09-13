@@ -32,13 +32,13 @@ const signUp = catchAsync(async (req, res, next) => {
       return next(new HttpError("Fullname cannot be empty!", 400));
     }
 
-    if (!github || github.trim().length === 0) {
-      return next(new HttpError("Github url cannot be empty!", 400));
-    }
+    // if (!github || github.trim().length === 0) {
+    //   return next(new HttpError("Github url cannot be empty!", 400));
+    // }
 
-    if (!contact || contact.trim().length === 0) {
-      return next(new HttpError("Contact cannot be empty!", 400));
-    }
+    // if (!contact || contact.trim().length === 0) {
+    //   return next(new HttpError("Contact cannot be empty!", 400));
+    // }
 
     if (password !== confirmPassword) {
       return next(new HttpError("Passwords do not match!", 400));
@@ -69,8 +69,7 @@ const signUp = catchAsync(async (req, res, next) => {
       fullName,
       email,
       password: passwordHash,
-      github,
-      contact,
+
       ...others,
     });
 
@@ -134,7 +133,8 @@ const login = catchAsync(async (req, res, next) => {
 
     // TODO - Compare password to existingUser password
     if (!(await comparePassword(password, existingUser.password))) {
-      return next(new HttpError("Passwords do not match", 400));
+      // return next(new HttpError("Passwords do not match", 400));
+      return res.json({ message: "Invalid Password" });
     }
 
     try {

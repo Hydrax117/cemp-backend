@@ -10,6 +10,7 @@ import {
   getAllEvents,
   registeredUsers,
   eventUnRegister,
+  popuparEvents,
 } from "../controllers/eventController.js";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
 import multer from "multer";
@@ -18,7 +19,8 @@ import fs from "fs";
 import { catchAsync } from "../utils/catchAsync.js";
 import eventModel from "../models/eventModel.js";
 import HttpError from "../utils/http-error.js";
-import cloudinary from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -37,13 +39,12 @@ cloudinary.config({
   api_secret: process.env.api_secret, // Replace with your Cloudinary API secret
 });
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "uploads",
+    resource_type: "auto",
+    allowed_formats: ["jpg", "png"],
   },
 });
 
@@ -113,34 +114,40 @@ router.post(
   upload.single("image"),
   catchAsync(async (req, res, next) => {
     // Check for upload errors
+
     if (req.fileValidationError) {
       return res.status(400).json({ message: req.fileValidationError });
     } else if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
+    console.log(req.body.date);
+    var eventTitle = req.body.title;
+    var eventDescription = req.body.description;
+
+    if (eventTitle && eventDescription) {
+      var findEvent = await eventModel.find({ title: eventTitle });
+      if (findEvent.length > 0) {
+        return next(new HttpError("event already exsist"), 500);
+      }
+    } else {
+      return next(new HttpError("title,description is required "), 500);
+    }
+
     try {
       const result = await cloudinary.uploader.upload(req.file.path);
       const uploadImageUrl = result.secure_url;
+      console.log(result);
 
       try {
-        var eventTitle = req.body.title;
-        var eventDescription = req.body.description;
-        if (eventTitle && eventDescription) {
-          var findEvent = await eventModel.find({ title: eventTitle });
-          if (findEvent.length > 0) {
-            return next(new HttpError("event already exsist"), 500);
-          }
-          var event = new eventModel(req.body);
-          event.imageUrl = uploadImageUrl;
-          await event.save();
-          return res.json({
-            success: true,
-            data: event,
-          });
-        } else {
-          return next(new HttpError("title,description is required "), 500);
-        }
+        var event = new eventModel(req.body);
+        event.imageUrl = uploadImageUrl;
+        event.date = new Date(req.body.date);
+        await event.save();
+        return res.json({
+          success: true,
+          data: event,
+        });
       } catch (error) {
         return next(new HttpError(error.message), 500);
       }
@@ -157,7 +164,7 @@ router.get("/all", getAllEvents);
 router.get("/:id/registered", registeredUsers);
 router.put("/update/:id", updateEvent);
 router.delete("/delete/:id", deleteEvent);
-router.post("/:id/register", isAuthenticatedUser, eventRegistration);
+router.post("/:id/register", eventRegistration);
 router.delete("/:eventId/unregister", isAuthenticatedUser, eventUnRegister);
-
+router.get("/porpolar", popuparEvents);
 export default router;

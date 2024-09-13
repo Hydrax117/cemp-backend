@@ -53,62 +53,62 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-// Endpoint to list folder contents
-app.get("/folder-contents", (req, res) => {
-  const folderPath = "./uploads"; // Replace with your desired folder path
-
-  fs.readdir(folderPath, (err, files) => {
-    if (err) {
-      res.status(500).json({ error: "Error reading folder contents" });
-    } else {
-      res.json(files);
-    }
-  });
-});
-
-app.post("/uplod", upload.single("image"), async (req, res) => {
-  try {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    res.json({ url: result.secure_url });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error uploading image" });
-  }
-});
+// app.post("/uplod", upload.single("image"), async (req, res) => {
+//   try {
+//     const result = await cloudinary.uploader.upload(req.file.path);
+//     res.json({ url: result.secure_url });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error uploading image" });
+//   }
+// });
 // Endpoint to serve the image
-app.get("/uploads/:filename", (req, res) => {
-  const filename = req.params.filename;
-  const imagePath = __dirname + "/uploads/" + filename; // Replace with your image directory
-  console.log("path", imagePath);
-  res.sendFile(imagePath, (err) => {
-    if (err) {
-      res.status(404).send("Image not found");
-    }
-  });
-});
+
+// app.get("/uploads/:filename", (req, res) => {
+//   const filename = req.params.filename;
+//   const imagePath = __dirname + "/uploads/" + filename; // Replace with your image directory
+//   console.log("path", imagePath);
+//   res.sendFile(imagePath, (err) => {
+//     if (err) {
+//       res.status(404).send("Image not found");
+//     }
+//   });
+// });
 
 const __dirname = import.meta.dirname;
 console.log(__dirname);
 
 // Schedule automatic deletion of past events (run as a separate process)
+
 const deletePastEvents = async () => {
   const oneWeekAgo = moment().subtract(7, "days").startOf("day");
   const eventsToDelete = await eventModel.find({ date: { $lt: oneWeekAgo } });
   for (const event of eventsToDelete) {
     if (event.imageUrl) {
-      const imagePath = path.join(__dirname, event.imageUrl.split("/").pop());
-      console.log("image path", imagePath);
-      try {
-        fs.unlinkSync(imagePath);
-        console.log(`Deleted image for event: ${event._id}`);
-      } catch (error) {
-        console.error(`Error deleting image for event ${event._id}:`, error);
-      }
     }
   }
   await eventModel.deleteMany({ date: { $lt: oneWeekAgo } }); // Delete past events older than one week
   console.log("Past events deleted");
 };
+
+// const deletePastEvents = async () => {
+//   const oneWeekAgo = moment().subtract(7, "days").startOf("day");
+//   const eventsToDelete = await eventModel.find({ date: { $lt: oneWeekAgo } });
+//   for (const event of eventsToDelete) {
+//     if (event.imageUrl) {
+//       const imagePath = path.join(__dirname, event.imageUrl.split("/").pop());
+//       console.log("image path", imagePath);
+//       try {
+//         fs.unlinkSync(imagePath);
+//         console.log(`Deleted image for event: ${event._id}`);
+//       } catch (error) {
+//         console.error(`Error deleting image for event ${event._id}:`, error);
+//       }
+//     }
+//   }
+//   await eventModel.deleteMany({ date: { $lt: oneWeekAgo } }); // Delete past events older than one week
+//   console.log("Past events deleted");
+// };
 
 // Update event status automatically every day (can be customized)
 const updateEventStatuses = async () => {

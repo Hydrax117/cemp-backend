@@ -224,6 +224,36 @@ const deleteEvent = catchAsync(async (req, res, next) => {
   }
 });
 
+const popuparEvents = catchAsync(async (req, res, next) => {
+  try {
+    const popularEvents = await eventModel.aggregate([
+      {
+        $project: {
+          title: 1,
+          interestedUsers: 1,
+          numInterestedUsers: { $size: "$interestedUsers" },
+          imageUrl: 1,
+          date: 1,
+          status: 1,
+          area: 1,
+          location: 1,
+          organizer: 1,
+        },
+      },
+      {
+        $sort: { numInterestedUsers: -1 },
+      },
+      {
+        $limit: 5, // Limit to top 5 events
+      },
+    ]);
+
+    console.log("Most popular events:", popularEvents);
+    return res.send(popularEvents);
+  } catch (err) {
+    return next(new HttpError(err.message));
+  }
+});
 export {
   createNewEvent,
   getOneEvent,
@@ -234,4 +264,5 @@ export {
   getAllEvents,
   registeredUsers,
   eventUnRegister,
+  popuparEvents,
 };
