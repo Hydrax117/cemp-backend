@@ -43,14 +43,13 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
 //API routes
 app.use("/api/users", userRoutes);
 app.use("/api/event", eventRoutes);
 
 // Define routes
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send(req.user);
 });
 
 // app.post("/uplod", upload.single("image"), async (req, res) => {

@@ -39,6 +39,8 @@ const getAllEvents = catchAsync(async (req, res, next) => {
     const totalPages = Math.ceil(totalEvents / limit);
 
     res.json({
+      status: "success",
+      code: 200,
       events,
       totalPages,
       currentPage: page,
@@ -49,9 +51,9 @@ const getAllEvents = catchAsync(async (req, res, next) => {
 });
 
 const getOneEvent = catchAsync(async (req, res, next) => {
-  var query = req.query;
+  var eventId = req.params.eventId;
   try {
-    var findOneEvent = await eventModel.findOne(query);
+    var findOneEvent = await eventModel.findOne({ _id: eventId });
     if (findOneEvent) {
       return res.send({
         message: "success",
@@ -101,9 +103,8 @@ const searchEvent = catchAsync(async (req, res, next) => {
 });
 
 const eventRegistration = catchAsync(async (req, res, next) => {
-  const eventId = req.params.id;
-  const username = req.body.userId; // Replace with appropriate user identification method
-
+  const eventId = req.params.eventId;
+  const username = req.user._id; // Replace with appropriate user identification method
   try {
     const event = await eventModel.findById(eventId);
     if (!event) {
@@ -132,7 +133,10 @@ const eventRegistration = catchAsync(async (req, res, next) => {
       console.error("Error sending email:", error);
       return next(new HttpError("Message not sent Successfully", 500));
     }
-    res.json({ message: "Successfully registered for the event" });
+    res.json({
+      status: "success",
+      message: "Successfully registered for the event",
+    });
   } catch (err) {
     return next(new HttpError(err.message));
   }

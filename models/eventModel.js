@@ -40,7 +40,7 @@ const EventShema = mongoose.Schema({
   startTime: { type: String },
   endTime: { type: String },
   location: { type: String },
-  organizer: { type: String },
+  organizer: [{ name: String, email: String }],
   speakers: [],
   createdAt: { type: Date, default: Date.now },
   maxAttendees: { type: Number }, // Maximum number of attendees allowed (optional)

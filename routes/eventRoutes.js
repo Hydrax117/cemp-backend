@@ -128,7 +128,7 @@ router.post(
     if (eventTitle && eventDescription) {
       var findEvent = await eventModel.find({ title: eventTitle });
       if (findEvent.length > 0) {
-        return next(new HttpError("event already exsist"), 500);
+        return res.status(500).json({ message: "event already exsist" });
       }
     } else {
       return next(new HttpError("title,description is required "), 500);
@@ -137,12 +137,14 @@ router.post(
     try {
       const result = await cloudinary.uploader.upload(req.file.path);
       const uploadImageUrl = result.secure_url;
-      console.log(result);
+      // console.log(result);
 
       try {
         var event = new eventModel(req.body);
         event.imageUrl = uploadImageUrl;
         event.date = new Date(req.body.date);
+        event.imagePublicId = result.public_id;
+
         await event.save();
         return res.json({
           success: true,
@@ -159,12 +161,12 @@ router.post(
 );
 router.post("/create", createNewEvent);
 router.get("/search", searchEvent);
-router.get("/get-one-event", getOneEvent);
+router.get("/get-event/:eventId", getOneEvent);
 router.get("/all", getAllEvents);
 router.get("/:id/registered", registeredUsers);
 router.put("/update/:id", updateEvent);
 router.delete("/delete/:id", deleteEvent);
-router.post("/:id/register", eventRegistration);
+router.post("/:eventId/register", isAuthenticatedUser, eventRegistration);
 router.delete("/:eventId/unregister", isAuthenticatedUser, eventUnRegister);
 router.get("/porpolar", popuparEvents);
 export default router;
