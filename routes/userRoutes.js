@@ -28,7 +28,6 @@ router.get("/users", isAuthenticatedUser, getAllUsers);
 router.get("/me/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
-
 router.put("/me/update", isAuthenticatedUser, updateUser);
 router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 router
@@ -39,6 +38,6 @@ router
   .put(isAuthenticatedUser, authorizeRoles("community-admin"), updateUserRole);
 router.get("/logout", logout);
 router.get("/me/search", searchUser);
-router.get("/events", registeredEvents);
+router.get("/events", isAuthenticatedUser, registeredEvents);
 
 export default router;

@@ -116,6 +116,7 @@ const signUp = catchAsync(async (req, res, next) => {
 });
 
 const login = catchAsync(async (req, res, next) => {
+  console.log("login");
   try {
     const { email, password } = req.body;
 
@@ -452,6 +453,7 @@ const registeredEvents = catchAsync(async (req, res, next) => {
     const totalPages = Math.ceil(totalEvents / limit);
 
     res.json({
+      status: "success",
       events,
       totalPages,
       currentPage: page,
