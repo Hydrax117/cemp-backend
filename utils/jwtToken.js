@@ -6,7 +6,7 @@ const sendToken = async (user, statusCode, res) => {
   const token = await generateToken(user._id);
   res.status(statusCode).cookie("token", token, { secure: false }).json({
     success: true,
-    message: "Login successfull",
+    message: "Signup successfull",
     data: {
       user,
     },
