@@ -39,6 +39,8 @@ const getAllEvents = catchAsync(async (req, res, next) => {
     const totalPages = Math.ceil(totalEvents / limit);
 
     res.json({
+      status: "success",
+      code: 200,
       events,
       totalPages,
       currentPage: page,
@@ -49,9 +51,9 @@ const getAllEvents = catchAsync(async (req, res, next) => {
 });
 
 const getOneEvent = catchAsync(async (req, res, next) => {
-  var query = req.query;
+  var eventId = req.params.eventId;
   try {
-    var findOneEvent = await eventModel.findOne(query);
+    var findOneEvent = await eventModel.findOne({ _id: eventId });
     if (findOneEvent) {
       return res.send({
         message: "success",
@@ -101,9 +103,8 @@ const searchEvent = catchAsync(async (req, res, next) => {
 });
 
 const eventRegistration = catchAsync(async (req, res, next) => {
-  const eventId = req.params.id;
-  const username = req.body.userId; // Replace with appropriate user identification method
-
+  const eventId = req.params.eventId;
+  const username = req.user._id; // Replace with appropriate user identification method
   try {
     const event = await eventModel.findById(eventId);
     if (!event) {
@@ -125,14 +126,17 @@ const eventRegistration = catchAsync(async (req, res, next) => {
     try {
       await sendEmail({
         email: req.user.email,
-        subject: "Sign-up Notification",
-        message: `Dear , you have successfully registered for ${event.title}`,
+        subject: "Event Registration",
+        message: `Dear ${req.user.email}, you have successfully registered for ${event.title}`,
       });
     } catch (error) {
       console.error("Error sending email:", error);
       return next(new HttpError("Message not sent Successfully", 500));
     }
-    res.json({ message: "Successfully registered for the event" });
+    res.json({
+      status: "success",
+      message: "Successfully registered for the event",
+    });
   } catch (err) {
     return next(new HttpError(err.message));
   }
@@ -140,9 +144,8 @@ const eventRegistration = catchAsync(async (req, res, next) => {
 
 const eventUnRegister = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
-  const userId = req.query.userId;
-  const user = req.user;
-  // console.log("current user", user);
+  const userId = req.user._id || req.query.userId;
+  console.log("current user", userId);
 
   try {
     const event = await eventModel.findById(eventId);
@@ -224,6 +227,36 @@ const deleteEvent = catchAsync(async (req, res, next) => {
   }
 });
 
+const popuparEvents = catchAsync(async (req, res, next) => {
+  try {
+    const popularEvents = await eventModel.aggregate([
+      {
+        $project: {
+          title: 1,
+          interestedUsers: 1,
+          numInterestedUsers: { $size: "$interestedUsers" },
+          imageUrl: 1,
+          date: 1,
+          status: 1,
+          area: 1,
+          location: 1,
+          organizer: 1,
+        },
+      },
+      {
+        $sort: { numInterestedUsers: -1 },
+      },
+      {
+        $limit: 5, // Limit to top 5 events
+      },
+    ]);
+
+    console.log("Most popular events:", popularEvents);
+    return res.send(popularEvents);
+  } catch (err) {
+    return next(new HttpError(err.message));
+  }
+});
 export {
   createNewEvent,
   getOneEvent,
@@ -234,4 +267,5 @@ export {
   getAllEvents,
   registeredUsers,
   eventUnRegister,
+  popuparEvents,
 };

@@ -32,35 +32,37 @@ const signUp = catchAsync(async (req, res, next) => {
       return next(new HttpError("Fullname cannot be empty!", 400));
     }
 
-    if (!github || github.trim().length === 0) {
-      return next(new HttpError("Github url cannot be empty!", 400));
-    }
+    // if (!github || github.trim().length === 0) {
+    //   return next(new HttpError("Github url cannot be empty!", 400));
+    // }
 
-    if (!contact || contact.trim().length === 0) {
-      return next(new HttpError("Contact cannot be empty!", 400));
-    }
+    // if (!contact || contact.trim().length === 0) {
+    //   return next(new HttpError("Contact cannot be empty!", 400));
+    // }
 
     if (password !== confirmPassword) {
-      return next(new HttpError("Passwords do not match!", 400));
+      return res.status(400).json({
+        message: "Passwords do not match!",
+      });
     }
 
     if (!validatePassword(password)) {
-      return next(
-        new HttpError(
+      return res.status(400).json({
+        message:
           "Password must contain Uppercase, LowerCase, Symbol, Number and must be at least 8 characters!",
-          400
-        )
-      );
+      });
     }
 
     if (!password || password.trim().length === 0) {
       return next(new HttpError("Password cannot be empty", 400));
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).select("email");
 
     if (existingUser) {
-      return next(new HttpError("User already exists!", 400));
+      return res
+        .status(401)
+        .json({ message: "another user exist with is email" });
     }
 
     const passwordHash = await createHashedPassword(password);
@@ -69,8 +71,7 @@ const signUp = catchAsync(async (req, res, next) => {
       fullName,
       email,
       password: passwordHash,
-      github,
-      contact,
+
       ...others,
     });
 
@@ -78,7 +79,7 @@ const signUp = catchAsync(async (req, res, next) => {
       await sendEmail({
         email: newUser.email,
         subject: "Sign-up Notification",
-        message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.If you did not initiate this,send an email to ${helpEmail}`,
+        message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.If you did not initiate this,send an email to admin.react.community.project@gmail.com`,
       });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -115,6 +116,7 @@ const signUp = catchAsync(async (req, res, next) => {
 });
 
 const login = catchAsync(async (req, res, next) => {
+  // console.log("login");
   try {
     const { email, password } = req.body;
 
@@ -126,22 +128,26 @@ const login = catchAsync(async (req, res, next) => {
       return next(new HttpError("Password cannot be empty", 400));
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).select("password");
+    const existingUser1 = await User.findOne({ email }).select("-password");
 
     if (!existingUser) {
-      return next(new HttpError("User does not exist", 404));
+      return res
+        .status(404)
+        .json({ message: "User does not exsist with this email" });
     }
 
     // TODO - Compare password to existingUser password
     if (!(await comparePassword(password, existingUser.password))) {
-      return next(new HttpError("Passwords do not match", 400));
+      // return nexts(new HttpError("Passwords do not match", 400));
+      return res.status(400).json({ message: "Invalid Password" });
     }
 
     try {
       await sendEmail({
-        email: existingUser.email,
+        email: existingUser1.email,
         subject: "Login Notification",
-        message: `Dear ${existingUser.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to React Developer Community on ${currentDate}. If you did not initiate this, change your password immediately or send an email to ${helpEmail}`,
+        message: `Dear ${existingUser1.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to React Developer Community on ${currentDate}. If you did not initiate this, change your password immediately or send an email to admin.react.community.project@gmail.com`,
       });
     } catch (error) {
       return next(new HttpError("Message not sent Successfully", 500));
@@ -149,7 +155,7 @@ const login = catchAsync(async (req, res, next) => {
 
     /*const token = await generateToken(existingUser._id);*/
 
-    sendToken(existingUser, 200, res);
+    sendToken(existingUser1, 200, res);
     /*res.status(201)
             .cookie("token", token , {
                 httpOnly: true
@@ -430,8 +436,8 @@ const searchUser = catchAsync(async (req, res, next) => {
 });
 
 const registeredEvents = catchAsync(async (req, res, next) => {
-  const userId = req.query.id;
-  console.log("id", userId);
+  const userId = req.user._id || req.query.id;
+  console.log("id");
   const page = parseInt(req.query.page) || 1; // Default to page 1
   const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
 
@@ -447,7 +453,8 @@ const registeredEvents = catchAsync(async (req, res, next) => {
     const totalPages = Math.ceil(totalEvents / limit);
 
     res.json({
-      events,
+      status: "success",
+      events: events,
       totalPages,
       currentPage: page,
     });
