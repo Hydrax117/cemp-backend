@@ -141,9 +141,12 @@ router.post(
 
       try {
         var event = new eventModel(req.body);
+        const hosts = JSON.parse(req.body.organizer);
+
         event.imageUrl = uploadImageUrl;
         event.date = new Date(req.body.date);
         event.imagePublicId = result.public_id;
+        event.organizer = hosts;
 
         await event.save();
         return res.json({
