@@ -168,5 +168,5 @@ router.put("/update/:id", updateEvent);
 router.delete("/delete/:id", deleteEvent);
 router.post("/:eventId/register", isAuthenticatedUser, eventRegistration);
 router.delete("/:eventId/unregister", isAuthenticatedUser, eventUnRegister);
-router.get("/porpolar", popuparEvents);
+router.get("/porpular", popuparEvents);
 export default router;

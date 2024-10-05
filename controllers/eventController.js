@@ -126,8 +126,8 @@ const eventRegistration = catchAsync(async (req, res, next) => {
     try {
       await sendEmail({
         email: req.user.email,
-        subject: "Sign-up Notification",
-        message: `Dear , you have successfully registered for ${event.title}`,
+        subject: "Event Registration",
+        message: `Dear ${req.user.email}, you have successfully registered for ${event.title}`,
       });
     } catch (error) {
       console.error("Error sending email:", error);

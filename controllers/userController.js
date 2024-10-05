@@ -41,16 +41,16 @@ const signUp = catchAsync(async (req, res, next) => {
     // }
 
     if (password !== confirmPassword) {
-      return next(new HttpError("Passwords do not match!", 400));
+      return res.status(400).json({
+        message: "Passwords do not match!",
+      });
     }
 
     if (!validatePassword(password)) {
-      return next(
-        new HttpError(
+      return res.status(400).json({
+        message:
           "Password must contain Uppercase, LowerCase, Symbol, Number and must be at least 8 characters!",
-          400
-        )
-      );
+      });
     }
 
     if (!password || password.trim().length === 0) {
@@ -79,7 +79,7 @@ const signUp = catchAsync(async (req, res, next) => {
       await sendEmail({
         email: newUser.email,
         subject: "Sign-up Notification",
-        message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.If you did not initiate this,send an email to ${helpEmail}`,
+        message: `Dear ${newUser.fullName}, Welcome to React community. Thank you for joining us, You have Successfully registered on ${currentDate}.If you did not initiate this,send an email to admin.react.community.project@gmail.com`,
       });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -147,7 +147,7 @@ const login = catchAsync(async (req, res, next) => {
       await sendEmail({
         email: existingUser1.email,
         subject: "Login Notification",
-        message: `Dear ${existingUser1.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to React Developer Community on ${currentDate}. If you did not initiate this, change your password immediately or send an email to ${helpEmail}`,
+        message: `Dear ${existingUser1.fullName}, Your Login was Successful. Welcome Back! You have logged in successfully to React Developer Community on ${currentDate}. If you did not initiate this, change your password immediately or send an email to admin.react.community.project@gmail.com`,
       });
     } catch (error) {
       return next(new HttpError("Message not sent Successfully", 500));
@@ -437,7 +437,7 @@ const searchUser = catchAsync(async (req, res, next) => {
 
 const registeredEvents = catchAsync(async (req, res, next) => {
   const userId = req.user._id || req.query.id;
-  console.log("id", userId);
+  console.log("id");
   const page = parseInt(req.query.page) || 1; // Default to page 1
   const limit = parseInt(req.query.limit) || 10; // Default to 10 events per page
 
@@ -454,7 +454,7 @@ const registeredEvents = catchAsync(async (req, res, next) => {
 
     res.json({
       status: "success",
-      events,
+      events: events,
       totalPages,
       currentPage: page,
     });
