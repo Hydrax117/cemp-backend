@@ -121,7 +121,7 @@ router.post(
       return res.status(400).json({ message: "No image uploaded" });
     }
 
-    console.log(req.body.date);
+    // console.log(req.body.date);
     var eventTitle = req.body.title;
     var eventDescription = req.body.description;
 

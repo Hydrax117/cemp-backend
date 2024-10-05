@@ -116,7 +116,7 @@ const signUp = catchAsync(async (req, res, next) => {
 });
 
 const login = catchAsync(async (req, res, next) => {
-  console.log("login");
+  // console.log("login");
   try {
     const { email, password } = req.body;
 

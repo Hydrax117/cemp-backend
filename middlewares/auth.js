@@ -18,7 +18,7 @@ const isAuthenticatedUser = catchAsync(async (req, res, next) => {
         "-password"
       );
       req.user = user;
-      console.log(user);
+      // console.log(user);
 
       if (!user) {
         return res.send("Authentication failed");

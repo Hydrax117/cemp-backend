@@ -144,9 +144,8 @@ const eventRegistration = catchAsync(async (req, res, next) => {
 
 const eventUnRegister = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
-  const userId = req.query.userId;
-  const user = req.user;
-  // console.log("current user", user);
+  const userId = req.user._id || req.query.userId;
+  console.log("current user", userId);
 
   try {
     const event = await eventModel.findById(eventId);
