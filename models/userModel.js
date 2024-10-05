@@ -21,9 +21,10 @@ const userSchema = mongoose.Schema(
     avatar: {
       type: String,
       required: true,
-      default:"https://res.cloudinary.com/formula-web-apps/image/upload/v1623766149/148-1486972_mystery-man-avatar-circle-clipart_kldmy3.jpg"
+      default:
+        "https://res.cloudinary.com/formula-web-apps/image/upload/v1623766149/148-1486972_mystery-man-avatar-circle-clipart_kldmy3.jpg",
     },
-     /* avatar: {
+    /* avatar: {
        public_id: {
          type: String,
          required: true,
@@ -35,23 +36,14 @@ const userSchema = mongoose.Schema(
           default: "https://drive.google.com/file/d/18R8cm3ASWfTwgg994-hkyxZClVX8h0TG/view?usp=drivesdk",
       },
     },*/
-    specialty: {
-      type: String,
-      enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
-      default: "Backend",
-    },
-    interests: {
-      type: String,
-      enum: [ "Backend", "Frontend", "Novice", "Product Designer", "UI/UX"],
-      default: "Novice",
-    },
+
+    interests: [],
     bio: {
       type: String,
-      default: "Hello World"
+      default: "Hello World",
     },
     github: {
       type: String,
-      required: true,
       default: "https://github.com",
     },
     portfolio: {
@@ -60,7 +52,6 @@ const userSchema = mongoose.Schema(
     },
     contact: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
@@ -74,15 +65,24 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({ fullName: "text", email: "text", github: "text",portfolio: "text", id: "text",}); // Create text index
+userSchema.index({
+  fullName: "text",
+  email: "text",
+  github: "text",
+  portfolio: "text",
+  id: "text",
+}); // Create text index
 
 //Generating password reset token with crypto
-userSchema.methods.createPasswordResetToken = function(){
-    let resetToken = crypto.randomBytes(32).toString("hex");
-    this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    this.passwordResetExpires = Date.now() + 15 * 60 * 1000;
-    return resetToken;
-}
+userSchema.methods.createPasswordResetToken = function () {
+  let resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.passwordResetExpires = Date.now() + 15 * 60 * 1000;
+  return resetToken;
+};
 
 const User = mongoose.model("User", userSchema);
 

@@ -22,13 +22,13 @@ const createHashedPassword = async (password) => {
 };
 
 const comparePassword = async (password, hashedPassword) => {
-    let result;
-    try {
-        result = await bcrypt.compare(password, hashedPassword);
-    }catch(error){
-        throw new Error("Passwords do not match");
-    }
-    return result;
+  let result;
+  try {
+    result = await bcrypt.compare(password, hashedPassword);
+  } catch (error) {
+    throw new Error("Passwords do not match");
+  }
+  return result;
 };
 
-export {generateToken, createHashedPassword, comparePassword};
+export { generateToken, createHashedPassword, comparePassword };

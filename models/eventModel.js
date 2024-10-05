@@ -12,30 +12,45 @@ const EventShema = mongoose.Schema({
   date: Date,
   status: {
     type: String,
-     
   },
+
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  imagePublicId: String,
   area: {
     type: String,
-    enum: [
-      "Backend",
-      "Frontend",
-      "Novice",
-      "Product Designer",
-      "UI/UX",
-      "Web3",
-    ],
-    default: "Novice",
+    // enum: [
+    //   "Backend",
+    //   "Frontend",
+    //   "Novice",
+    //   "Product Designer",
+    //   "UI/UX",
+    //   "Web3",
+    // ],
+    // default: "Novice",
   },
-  startTime:{type:String},
-  endTime:{ type:String},
-  location:{type:String},
-  organizer:{type:String},
-  speakers:[],
-  imageUrl:{type:String},
-  createdAt:{type:Date,default:Date.now},
+  eventType: {
+    type: String,
+    enum: ["Free", "Paid"],
+    // default: "Novice",
+  },
+  tickets: [{ name: String, price: Number }],
+  startTime: { type: String },
+  endTime: { type: String },
+  location: { type: String },
+  organizer: [{ name: String, email: String, contact: String }],
+  speakers: [],
+  createdAt: { type: Date, default: Date.now },
   maxAttendees: { type: Number }, // Maximum number of attendees allowed (optional)
 });
-EventShema.index({ title: "text", description: "text", area: "text",location:"text" }); // Create text index
+EventShema.index({
+  title: "text",
+  description: "text",
+  area: "text",
+  location: "text",
+}); // Create text index
 
 EventShema.pre("save", function (next) {
   // const event = this;
@@ -46,16 +61,20 @@ EventShema.pre("save", function (next) {
   //   event.date < today ? "past" : event.date.toString().slice(0,15) === today.toString().slice(0,15) ? "today" : "upcoming";
   const event = this;
   // const today = new Date().setHours(0, 0, 0, 0); // Reset time to midnight
-   const today = moment().startOf("day"); // Get today's date without time
+  const today = moment().startOf("day"); // Get today's date without time
 
   if (event.date < today) {
-    event.status = 'Past';
-  } else if (event.date.toString().slice(0,15) === today.toString().slice(0,15)) {
-    event.status = 'Today';
-  } else if (event.date.toString().slice(0,15) === tomorrow.toString().slice(0,15)) {
-    event.status = 'Tomorrow';
+    event.status = "Past";
+  } else if (
+    event.date.toString().slice(0, 15) === today.toString().slice(0, 15)
+  ) {
+    event.status = "Today";
+  } else if (
+    event.date.toString().slice(0, 15) === tomorrow.toString().slice(0, 15)
+  ) {
+    event.status = "Tomorrow";
   } else {
-    event.status = 'Upcoming';
+    event.status = "Upcoming";
   }
   next();
 });
