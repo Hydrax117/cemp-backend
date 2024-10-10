@@ -2,6 +2,19 @@ import eventModel from "../models/eventModel.js";
 import { catchAsync } from "../utils/catchAsync.js";
 import { sendEmail } from "../utils/email.js";
 import HttpError from "../utils/http-error.js";
+import qrcode from "qrcode";
+import fs from "fs/promises";
+import moment from "moment";
+
+// Function to generate QR code
+async function generateQRCode(data) {
+  try {
+    return await qrcode.toDataURL(data);
+  } catch (err) {
+    console.error("Error generating QR code:", err);
+    return null;
+  }
+}
 
 const createNewEvent = catchAsync(async (req, res, next) => {
   try {
@@ -105,8 +118,9 @@ const searchEvent = catchAsync(async (req, res, next) => {
 const eventRegistration = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
   const username = req.user._id; // Replace with appropriate user identification method
+  const event = await eventModel.findById(eventId);
+
   try {
-    const event = await eventModel.findById(eventId);
     if (!event) {
       return next(new HttpError("event not found", 500));
     }
@@ -120,14 +134,38 @@ const eventRegistration = catchAsync(async (req, res, next) => {
     ) {
       return next(new HttpError("event is full"));
     }
+    const formattedDate = moment(event?.date).format("dddd MMM DD YYYY");
 
+    const qrCodeData = `${req.user.fullName}-${event.title}--${formattedDate}-${req.user.email}`;
+    const qrCodeImage = await generateQRCode(qrCodeData);
     event.interestedUsers.push(username);
     const updatedEvent = await event.save();
     try {
       await sendEmail({
         email: req.user.email,
-        subject: "Event Registration",
+        subject: `RSVP Confirmation for ${event.title}`,
         message: `Dear ${req.user.email}, you have successfully registered for ${event.title}`,
+        html: `
+        <h1>RSVP Confirmation</h1>
+        <p>Dear ${req.user.fullName},</p>
+        <p>Thank you for registering for "${event.title}". Here are the event details:</p>
+        <ul>
+          <li>Date: ${formattedDate}</li>
+          <li>Time: ${event.startTime}</li>
+          <li>Location: ${event.location}</li>
+        </ul>
+        <p>Please find your QR code ticket attached below. Present this at the event entrance.</p>
+        <img src="${qrCodeImage}" alt="QR Code Ticket"/>
+        <p>We look forward to seeing you at the event!</p>
+        <p>Best regards,<br>Event Organizers</p>
+      `,
+        attachments: [
+          {
+            filename: "qr-code.png",
+            content: qrCodeImage.split("base64,")[1],
+            encoding: "base64",
+          },
+        ],
       });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -145,7 +183,7 @@ const eventRegistration = catchAsync(async (req, res, next) => {
 const eventUnRegister = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
   const userId = req.user._id || req.query.userId;
-  console.log("current user", userId);
+  // console.log("current user", userId);
 
   try {
     const event = await eventModel.findById(eventId);
@@ -251,7 +289,7 @@ const popuparEvents = catchAsync(async (req, res, next) => {
       },
     ]);
 
-    console.log("Most popular events:", popularEvents);
+    // console.log("Most popular events:", popularEvents);
     return res.send(popularEvents);
   } catch (err) {
     return next(new HttpError(err.message));

@@ -33,9 +33,10 @@ const EventShema = mongoose.Schema({
   },
   eventType: {
     type: String,
-    enum: ["Free", "Paid"],
+    enum: ["Seminar", "Webinar"],
     // default: "Novice",
   },
+  ticketType: { type: String, enum: ["free", "paid"] },
   tickets: [{ name: String, price: Number }],
   startTime: { type: String },
   endTime: { type: String },
@@ -43,7 +44,6 @@ const EventShema = mongoose.Schema({
   organizer: [{ name: String, email: String, contact: String }],
   speakers: [],
   createdAt: { type: Date, default: Date.now },
-  maxAttendees: { type: Number }, // Maximum number of attendees allowed (optional)
 });
 EventShema.index({
   title: "text",
