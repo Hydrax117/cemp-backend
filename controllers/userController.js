@@ -417,9 +417,14 @@ const searchUser = catchAsync(async (req, res, next) => {
             return next(new HttpError("Search term cannot be empty", 404));
         }
 
-        const users = await User.find(searchCriteria).select(
-            "id fullName email github portfolio"
-        );
+        const users = await User.find({
+            $or: [
+                { fullName: { $regex: new RegExp(query, 'i') } },
+                { email: { $regex: new RegExp(query, 'i') } },
+                { github: { $regex: new RegExp(query, 'i') } },
+                { portfolio: { $regex: new RegExp(query, 'i') } }
+            ]
+        }).select("id fullName email github portfolio");
 
         if (users.length === 0) {
             return next(new HttpError("No results for your search", 404));
