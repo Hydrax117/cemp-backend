@@ -204,6 +204,7 @@ const getUser = catchAsync(async (req, res, next) => {
             }
         });
     } catch (error) {
+        console.log(error);
         return next(new HttpError("Could not retrieve user", 500));
     }
 });
