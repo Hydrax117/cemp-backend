@@ -5,6 +5,7 @@ import HttpError from "../utils/http-error.js";
 import qrcode from "qrcode";
 import fs from "fs/promises";
 import moment from "moment";
+import User from "../models/userModel.js";
 
 // Function to generate QR code
 async function generateQRCode(data) {
@@ -119,6 +120,7 @@ const eventRegistration = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
   const username = req.user._id; // Replace with appropriate user identification method
   const event = await eventModel.findById(eventId);
+  const user = await User.findOne({ _id: username });
 
   try {
     if (!event) {
@@ -139,6 +141,8 @@ const eventRegistration = catchAsync(async (req, res, next) => {
     const qrCodeData = `${req.user.fullName}-${event.title}--${formattedDate}-${req.user.email}`;
     const qrCodeImage = await generateQRCode(qrCodeData);
     event.interestedUsers.push(username);
+    user.interestedEvents.push(event._id);
+    await user.save();
     const updatedEvent = await event.save();
     try {
       await sendEmail({

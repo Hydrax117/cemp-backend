@@ -61,7 +61,9 @@ const userSchema = mongoose.Schema(
     },
     passwordResetToken: String,
     passwordResetExpires: Date,
+    interestedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Events" }],
   },
+
   { timestamps: true }
 );
 
