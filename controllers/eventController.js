@@ -187,6 +187,7 @@ const eventRegistration = catchAsync(async (req, res, next) => {
 const eventUnRegister = catchAsync(async (req, res, next) => {
   const eventId = req.params.eventId;
   const userId = req.user._id || req.query.userId;
+  const user = await User.findOne({ _id: userId });
   // console.log("current user", userId);
 
   try {
@@ -201,6 +202,8 @@ const eventUnRegister = catchAsync(async (req, res, next) => {
     }
 
     event.interestedUsers.splice(userIndex, 1);
+    user.interestedEvents.pull(eventId);
+    await user.save();
 
     await event.save();
     res.json({ message: "Successfully unregistered from the event" });
