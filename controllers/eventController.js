@@ -262,10 +262,20 @@ const updateEvent = catchAsync(async (req, res, next) => {
 
 const deleteEvent = catchAsync(async (req, res, next) => {
   try {
+    const event = eventModel.findOne({ _id: req.params.id });
+    // Remove the event from registered users' lists
+    for (const userId of event.interestedUsers) {
+      const user = await User.findById(userId);
+      user.interestedEvents = user.interestedEvents.filter(
+        (id) => id !== req.params.id
+      );
+      await user.save();
+    }
     const deletedEvent = await eventModel.findByIdAndDelete(req.params.id);
     if (!deletedEvent) {
       return next(new HttpError("event not found", 404));
     }
+
     res.json({ message: "Event deleted" });
   } catch (error) {
     return next(new HttpError(error.message, 500));
