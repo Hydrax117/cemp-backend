@@ -262,7 +262,8 @@ const updateEvent = catchAsync(async (req, res, next) => {
 
 const deleteEvent = catchAsync(async (req, res, next) => {
   try {
-    const event = eventModel.findOne({ _id: req.params.id });
+    const event = await eventModel.findOne({ _id: req.params.id });
+    // console.log(event);
     // Remove the event from registered users' lists
     for (const userId of event.interestedUsers) {
       const user = await User.findById(userId);
