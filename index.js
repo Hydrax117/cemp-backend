@@ -14,6 +14,7 @@ import eventRoutes from "./routes/eventRoutes.js";
 import multer from "multer";
 import fs from "fs";
 import path, { dirname } from "path";
+import { sendEmail } from "./utils/email.js";
 dotenv.config();
 connectToDB();
 // Create an Express application
@@ -137,6 +138,40 @@ const updateEventStatuses = async () => {
 };
 cron.schedule("19 13 * * *", deletePastEvents);
 cron.schedule("21 11 * * *", updateEventStatuses);
+
+// Function to send reminder email
+async function sendReminderEmail(event, user) {
+  const mailOptions = {
+    from: "your-email@example.com",
+    to: user.email,
+    subject: `Reminder: ${event.title} is tomorrow!`,
+    text: `Dear ${user.name},\n\nThis is a friendly reminder that the event "${event.title}" you registered for is happening tomorrow at ${event.location}. We look forward to seeing you there!\n\nBest regards,\nEvent Organizers`,
+  };
+
+  await sendEmail(mailOptions);
+}
+
+// Schedule task to send reminder emails
+cron.schedule("0 0 * * *", async () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const events = await eventModel
+    .find({
+      date: {
+        $gte: tomorrow,
+        $lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
+    .populate("interestedUsers");
+
+  for (const event of events) {
+    for (const user of event.interestedUsers) {
+      await sendReminderEmail(event, user);
+    }
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 8080;
