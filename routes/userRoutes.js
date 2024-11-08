@@ -94,13 +94,13 @@ router.post(
 router.get("/isAuthenticated", isAuthenticatedUser, (req, res) => {
   return res.status(200).json({ message: "success" });
 });
-router.post("/signup", signUp);
+router.post("/signup", upload.single("avatar"), signUp);
 router.post("/login", login);
 router.get("/users", isAuthenticatedUser, getAllUsers);
 router.get("/me/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
-router.put("/me/update", isAuthenticatedUser, updateUser);
+router.put("/me/update", isAuthenticatedUser, upload.single("avatar"), updateUser);
 router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 router
   .route("/delete/:id")
