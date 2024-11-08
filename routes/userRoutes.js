@@ -94,7 +94,7 @@ router.post(
 router.get("/isAuthenticated", isAuthenticatedUser, (req, res) => {
   return res.status(200).json({ message: "success" });
 });
-router.post("/signup", signUp);
+router.post("/signup", upload.single("avatar"), signUp);
 router.post("/login", login);
 router.get("/users", isAuthenticatedUser, getAllUsers);
 router.get("/me/:id", getUser);
