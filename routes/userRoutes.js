@@ -100,7 +100,7 @@ router.get("/users", isAuthenticatedUser, getAllUsers);
 router.get("/me/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
-router.put("/me/update", isAuthenticatedUser, updateUser);
+router.put("/me/update", isAuthenticatedUser, upload.single("avatar"), updateUser);
 router.put("/me/update-password", isAuthenticatedUser, updatePassword);
 router
   .route("/delete/:id")

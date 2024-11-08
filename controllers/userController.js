@@ -21,7 +21,7 @@ cloudinary.config({
   cloud_name: process.env.cloud_name,
   api_key: process.env.api_key,
   api_secret: process.env.api_secret,
-})
+});
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -29,8 +29,8 @@ const storage = new CloudinaryStorage({
     folder: "uploads",
     resource_type: "auto",
     allowed_formats: ["jpg", "png"],
-  }
-})
+  },
+});
 
 const signUp = catchAsync(async (req, res, next) => {
   try {
@@ -286,14 +286,38 @@ const resetPassword = catchAsync(async (req, res, next) => {
 
 const updateUser = catchAsync(async (req, res, next) => {
   try {
+    const existingUser = await User.findById(req.user.id);
+    if (!existingUser) {
+      return next(new HttpError("User not found", 404));
+    }
+
     const newUserData = {
       ...req.body,
     };
+
+    // Handle avatar upload if a new file is provided
+    if (req.file) {
+      try {
+        // Delete the old avatar from Cloudinary if it exists
+        if (existingUser.avatarPublicId) {
+          await cloudinary.uploader.destroy(existingUser.avatarPublicId);
+        }
+
+        // Upload new avatar
+        const result = await cloudinary.uploader.upload(req.file.path);
+        newUserData.avatar = result.secure_url;
+        newUserData.avatarPublicId = result.public_id;
+      } catch (error) {
+        console.error("Error handling avatar:", error);
+        return next(new HttpError("Error updating avatar", 500));
+      }
+    }
     // TODO - req.user.id = req.user.userId
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
       new: true,
       runValidators: true,
     });
+
     res.status(200).json({
       success: true,
       message: "User Updated Successfully.",
