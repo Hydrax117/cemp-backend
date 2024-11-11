@@ -20,7 +20,7 @@ const userSchema = mongoose.Schema(
     },
     avatar: {
       type: String,
-      required: true,
+      // required: true,
       default:
         "https://res.cloudinary.com/formula-web-apps/image/upload/v1623766149/148-1486972_mystery-man-avatar-circle-clipart_kldmy3.jpg",
     },
