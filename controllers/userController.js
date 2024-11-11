@@ -13,6 +13,7 @@ import crypto from "crypto";
 import eventModel from "../models/eventModel.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
+import validator from "validator";
 
 const currentDate = new Date().toLocaleString();
 const helpEmail = process.env.EMAIL_USER;
@@ -49,13 +50,16 @@ const signUp = catchAsync(async (req, res, next) => {
       return next(new HttpError("Fullname cannot be empty!", 400));
     }
 
-    // if (!github || github.trim().length === 0) {
-    //   return next(new HttpError("Github url cannot be empty!", 400));
-    // }
+    // Validate GitHub URL (optional)
 
-    // if (!contact || contact.trim().length === 0) {
-    //   return next(new HttpError("Contact cannot be empty!", 400));
-    // }
+    if (github && !validator.isURL(github)) {
+      return next(new HttpError("Invalid GitHub URL format.", 400));
+    }
+
+    // Validate Contact (optional) - Let's assume it's a phone number or email
+    if (contact && !validator.isMobilePhone(contact) && !validator.isEmail(contact)) {
+      return next(new HttpError("Invalid contact format. It should be a valid phone number or email.", 400));
+    }
 
     if (password !== confirmPassword) {
       return res.status(400).json({
