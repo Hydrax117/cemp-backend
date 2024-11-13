@@ -14,6 +14,8 @@ import {
   updateUserRole,
   searchUser,
   registeredEvents,
+  googleLogin,
+  googleLoginResponse,
 } from "../controllers/userController.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -111,5 +113,7 @@ router
 router.get("/logout", logout);
 router.get("/me/search", searchUser);
 router.get("/events", isAuthenticatedUser, registeredEvents);
+router.get("/auth/google", googleLogin);
+router.get("/auth/google/callback", googleLoginResponse);
 
 export default router;

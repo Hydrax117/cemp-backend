@@ -11,6 +11,7 @@ import {
 import { validatePassword, validEmail } from "../utils/password.js";
 import crypto from "crypto";
 import eventModel from "../models/eventModel.js";
+import axios from "axios";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 import validator from "validator";
@@ -57,8 +58,17 @@ const signUp = catchAsync(async (req, res, next) => {
     }
 
     // Validate Contact (optional) - Let's assume it's a phone number or email
-    if (contact && !validator.isMobilePhone(contact) && !validator.isEmail(contact)) {
-      return next(new HttpError("Invalid contact format. It should be a valid phone number or email.", 400));
+    if (
+      contact &&
+      !validator.isMobilePhone(contact) &&
+      !validator.isEmail(contact)
+    ) {
+      return next(
+        new HttpError(
+          "Invalid contact format. It should be a valid phone number or email.",
+          400
+        )
+      );
     }
 
     if (password !== confirmPassword) {
@@ -475,6 +485,74 @@ const registeredEvents = catchAsync(async (req, res, next) => {
   }
 });
 
+const googleLogin = catchAsync(async (req, res) => {
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.CALLBACK_URL}&response_type=code&scope=profile email`;
+  res.redirect(url);
+
+  if (req.headers.accept?.includes("application/json")) {
+    res.json({ url });
+  } else {
+    res.redirect(url);
+  }
+});
+
+const googleLoginResponse = catchAsync(async (req, res) => {
+  const { code } = req.query;
+
+  try {
+    // Exchange authorization code for access token
+    const { data } = await axios.post("https://oauth2.googleapis.com/token", {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      code,
+      redirect_uri: process.env.CALLBACK_URL,
+      grant_type: "authorization_code",
+    });
+
+    const { access_token, id_token } = data;
+
+    // Use access_token or id_token to fetch user profile
+    const { data: profile } = await axios.get(
+      "https://www.googleapis.com/oauth2/v1/userinfo",
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }
+    );
+
+    // Create or update user in your database
+    const user = await User.findOrCreate({
+      googleId: profile.id,
+      email: profile.email,
+    });
+
+    const token = process.env.JWT_SECRET;
+
+    // If API request return JSON, else redirect with token
+    if (req.headers.accept?.includes("application/json")) {
+      res.json({
+        success: true,
+        user: profile,
+        token,
+      });
+    } else {
+      res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
+    }
+  } catch (error) {
+    console.error("Error:", error.response?.data?.error || error.message);
+    const errorMessage = "Authentication failed";
+
+    if (req.headers.accept?.includes("application/json")) {
+      res.status(401).json({ success: false, error: errorMessage });
+    } else {
+      res.redirect(
+        `${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(
+          errorMessage
+        )}`
+      );
+    }
+  }
+});
+
 export {
   signUp,
   login,
@@ -489,4 +567,6 @@ export {
   updateUserRole,
   searchUser,
   registeredEvents,
+  googleLogin,
+  googleLoginResponse,
 };
