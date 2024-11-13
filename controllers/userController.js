@@ -83,7 +83,7 @@ const signUp = catchAsync(async (req, res, next) => {
     if (existingUser) {
       return res
         .status(401)
-        .json({ message: "another user exist with is email" });
+        .json({ message: "Another user exists with this email" });
     }
 
     const passwordHash = await createHashedPassword(password);
