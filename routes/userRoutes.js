@@ -99,7 +99,7 @@ router.get("/isAuthenticated", isAuthenticatedUser, (req, res) => {
 router.post("/signup", upload.single("avatar"), signUp);
 router.post("/login", login);
 router.get("/users", isAuthenticatedUser, getAllUsers);
-router.get("/me/:id", getUser);
+router.get("/user/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.put("/me/update", isAuthenticatedUser, upload.single("avatar"), updateUser);

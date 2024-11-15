@@ -432,17 +432,16 @@ const updatePassword = catchAsync(async (req, res, next) => {
 
 const searchUser = catchAsync(async (req, res, next) => {
   const query = req.query.text;
+
+  if (!query || query.trim() === "") {
+    return next(new HttpError("Search term cannot be empty", 404));
+  }
+
   try {
     const searchCriteria = {
       $text: { $search: query },
     };
 
-    console.log(query);
-    console.log(searchCriteria);
-
-    if (!query) {
-      return next(new HttpError("Search term cannot be empty", 404));
-    }
 
     const users = await User.find(searchCriteria).select(
       "id fullName email github portfolio"
