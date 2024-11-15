@@ -408,6 +408,13 @@ const updatePassword = catchAsync(async (req, res, next) => {
     return next(new HttpError("Passwords do not match!", 400));
   }
 
+  if (!validatePassword(password)) {
+    return res.status(400).json({
+      message:
+        "Password must contain Uppercase, LowerCase, Symbol, Number and must be at least 8 characters!",
+    });
+  }
+
   if (!(await comparePassword(oldPassword, user.password))) {
     return next(new HttpError("Old Password incorrect", 401));
   }
