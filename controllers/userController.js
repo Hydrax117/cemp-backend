@@ -511,6 +511,8 @@ const googleLoginResponse = catchAsync(async (req, res) => {
 
     const { access_token, id_token } = data;
 
+    // const {data : profile} = await axios.get("https://www.googleapis.com/oauth2/v1/userinfo")
+
     // Use access_token or id_token to fetch user profile
     const { data: profile } = await axios.get(
       "https://www.googleapis.com/oauth2/v1/userinfo",
@@ -519,37 +521,66 @@ const googleLoginResponse = catchAsync(async (req, res) => {
       }
     );
 
-    // Create or update user in your database
-    const user = await User.findOrCreate({
-      googleId: profile.id,
-      email: profile.email,
-    });
+    const { id: googleId, email, name: fullName, picture: avatar} = profile;
 
-    const token = process.env.JWT_SECRET;
+    // Create or update user in your database
+    let user = await User.findOne({email});
+
+    if (!user) {
+      user = await User.create({
+        fullName,
+        email,
+        avatar,
+        password: crypto.randomBytes(32).toString('hex'),
+        role: 'member',
+        bio: `${fullName} joined via Google`
+      });
+    } else {
+      user.fullName = fullName;
+      user.avatar = avatar;
+      await user.save();
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
 
     // If API request return JSON, else redirect with token
     if (req.headers.accept?.includes("application/json")) {
       res.json({
         success: true,
-        user: profile,
+        user: {
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          avatar: user.avatar,
+          role: user.role,
+          bio: user.bio,
+          // Include other user fields as needed
+        },
         token,
       });
     } else {
-      res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
+      // Add user ID to the redirect URL for frontend state management
+      res.redirect(`${process.env.FRONTEND_URL}?token=${token}&userId=${user._id}`);
     }
   } catch (error) {
     console.error("Error:", error.response?.data?.error || error.message);
     const errorMessage = "Authentication failed";
 
-    if (req.headers.accept?.includes("application/json")) {
-      res.status(401).json({ success: false, error: errorMessage });
-    } else {
-      res.redirect(
-        `${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(
-          errorMessage
-        )}`
-      );
-    }
+    // if (req.headers.accept?.includes("application/json")) {
+    //   res.status(401).json({ success: false, error: errorMessage });
+    // } else {
+    //   res.redirect(
+    //     `${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(
+    //       errorMessage
+    //     )}`
+    //   );
+    // }
   }
 });
 
