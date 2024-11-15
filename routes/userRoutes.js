@@ -14,6 +14,8 @@ import {
   updateUserRole,
   searchUser,
   registeredEvents,
+  googleLogin,
+  googleLoginResponse,
 } from "../controllers/userController.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -97,7 +99,7 @@ router.get("/isAuthenticated", isAuthenticatedUser, (req, res) => {
 router.post("/signup", upload.single("avatar"), signUp);
 router.post("/login", login);
 router.get("/users", isAuthenticatedUser, getAllUsers);
-router.get("/me/:id", getUser);
+router.get("/user/:id", getUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 router.put("/me/update", isAuthenticatedUser, upload.single("avatar"), updateUser);
@@ -111,5 +113,7 @@ router
 router.get("/logout", logout);
 router.get("/me/search", searchUser);
 router.get("/events", isAuthenticatedUser, registeredEvents);
+router.get("/auth/google", googleLogin);
+router.get("/auth/google/callback", googleLoginResponse);
 
 export default router;
